@@ -51,23 +51,22 @@ defmodule Changelogr.Parser do
   end
 
   def to_commits_list(textfile) do
-    text =
-      textfile
-      |> Path.absname()
-      |> File.read!()
-      |> then(
-        &Regex.split(~r/^commit .*\n/m, &1,
-          trim: true,
-          include_captures: true
-        )
+    textfile
+    |> Path.absname()
+    |> File.read!()
+    |> then(
+      &Regex.split(~r/^commit .*\n/m, &1,
+        trim: true,
+        include_captures: true
       )
-      |> Enum.chunk_every(2)
-      |> Enum.map(
-        &Kernel.++(
-          [Path.basename(textfile)],
-          &1
-        )
+    )
+    |> Enum.chunk_every(2)
+    |> Enum.map(
+      &Kernel.++(
+        [Path.basename(textfile)],
+        &1
       )
+    )
   end
 
   def commit_to_struct(commit_list_item) do
