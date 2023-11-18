@@ -1,67 +1,171 @@
+defmodule Changelogr.FetchOp do
+  defstruct [
+    :url,
+    :timestamp,
+    :status,
+    :body,
+    :hrefs,
+    :dates,
+    # FIXME add proper error logging like in vatchex_greece
+    :errors
+  ]
+end
+
+defmodule Changelogr.ChangeLog do
+  defstruct [
+    :kernel_version,
+    :url,
+    # date from the directory listing
+    :date,
+    # when it was fetched
+    :timestamp,
+    :body,
+    :commits
+  ]
+end
+
 defmodule Changelogr.Fetcher do
   @kernel_org_url "https://cdn.kernel.org/pub/linux/kernel/"
   @changelog_filename_prefix "ChangeLog-"
 
-  def fetch_html(major) do
-    base_url = baseurl(major)
-
-    response =
-      base_url
-      |> URI.to_string()
-      |> (&Finch.build(:get, &1)).()
-      |> Finch.request(Changelogr.Finch)
+  def fetch_changelog(changelog) do
+    response = http_get(changelog.url)
 
     case response do
-      {:error, http_response} ->
-        {:error, http_response}
+      {:error, _} ->
+        {:error, %{message: "HTTP GET request error"}}
 
       {:ok, http_response} ->
-        baseurl_header = {"base-url", base_url}
+        case http_response.status do
+          200 ->
+            timestamp =
+              http_response.headers
+              |> Map.new()
+              |> Map.get("date")
+              |> parse_timestamp()
 
-        {:ok,
-         http_response
-         |> Map.update!(:headers, &[baseurl_header | &1])}
+            {:ok, %{changelog | body: http_response.body, timestamp: timestamp}}
+
+          _ ->
+            {:error, %{message: "HTTP status not 200", status: http_response.status}}
+        end
     end
   end
 
-  def extract_changelog_urls({:ok, %Finch.Response{body: body, headers: headers}}) do
-    base_url =
-      headers
-      |> Map.new()
-      |> Map.get("base-url")
-      |> URI.parse()
+  def fetchop_to_changelogs(%Changelogr.FetchOp{hrefs: hrefs, dates: dates})
+      when not (is_nil(hrefs) and is_nil(dates)) do
+    if Map.keys(hrefs) == Map.keys(dates) do
+      changelogs =
+        Map.keys(hrefs)
+        |> Enum.reduce(
+          [],
+          fn k, acc ->
+            [
+              %Changelogr.ChangeLog{
+                kernel_version: k,
+                url: Map.get(hrefs, k),
+                date: Map.get(dates, k)
+              }
+              | acc
+            ]
+          end
+        )
 
-    body
-    |> Floki.parse_document!()
-    |> Floki.find("a")
-    |> Stream.map(&ahref_to_uri(&1, base_url))
-    |> Stream.filter(&String.match?(elem(&1, 1), ~r/#{@changelog_filename_prefix}*/))
-    |> Enum.to_list()
-    |> Map.new()
+      {:ok, changelogs}
+    else
+      {:error, %{message: "Unequal length of ChangeLog hrefs and dates"}}
+    end
   end
 
-  def extract_dates({:ok, %Finch.Response{body: body, headers: headers}}) do
-    scan = Regex.scan(~r/>([^<]*)/m, body)
+  def fetch_available(major) when is_bitstring(major) do
+    major
+    |> fetch_html()
+    |> extract_changelog_hrefs()
+    |> extract_changelog_dates()
+  end
+
+  def fetch_html(major) do
+    url = baseurl(major)
+
+    timestamp = DateTime.now!("UTC")
+
+    default_result = %Changelogr.FetchOp{
+      url: URI.to_string(url),
+      timestamp: timestamp
+    }
+
+    response = http_get(default_result.url)
+
+    case response do
+      {:error, _} ->
+        {:error, default_result}
+
+      {:ok, http_response} ->
+        d =
+          http_response
+          |> Map.get(:headers)
+          |> Map.new()
+          |> Map.get("date")
+          |> parse_timestamp()
+
+        {:ok,
+         %{
+           default_result
+           | :timestamp => d,
+             :status => http_response.status,
+             :body => http_response.body
+         }}
+    end
+  end
+
+  def extract_changelog_hrefs({:ok, fetch_op}) when fetch_op.status == 200 do
+    url = URI.parse(fetch_op.url)
+
+    hrefs =
+      fetch_op.body
+      |> Floki.parse_document!()
+      |> Floki.find("a")
+      |> Stream.map(&ahref_to_uri(&1, url))
+      |> Stream.filter(&String.match?(elem(&1, 1), ~r/#{@changelog_filename_prefix}*/))
+      |> Enum.to_list()
+      |> Map.new()
+
+    {:ok, %{fetch_op | :hrefs => hrefs}}
+  end
+
+  def extract_changelog_urls({:error, fetch_op}) do
+    {:error, fetch_op}
+  end
+
+  def extract_changelog_dates({:ok, fetch_op}) when fetch_op.status == 200 do
+    scan = Regex.scan(~r/>([^<]*)/m, fetch_op.body)
 
     start_index =
       scan
       |> Enum.find_index(&(&1 == [">../", "../"]))
 
-    scan
-    |> Enum.slice((start_index + 2)..-1)
-    |> Enum.chunk_every(2)
-    |> Enum.map(&List.flatten/1)
-    |> Enum.map(&List.delete_at(&1, 0))
-    |> Enum.map(&List.delete_at(&1, 1))
-    |> Enum.reject(&(&1 == ["\r\n", "\r\n"] or &1 == ["", ""]))
-    |> Enum.map(fn [a, b] ->
-      [a, Regex.run(~r/\d{2}-\D{3}-\d{4} \d{2}:\d{2}/, b)] |> List.flatten()
-    end)
-    |> Enum.filter(&String.match?(List.first(&1), ~r/#{@changelog_filename_prefix}*/))
-    |> Enum.map(fn [a, b] ->
-      {href_to_version(a), Timex.parse!(b, "%e-%b-%Y %H:%M", :strftime)}
-    end)
-    |> Map.new()
+    dates =
+      scan
+      |> Enum.slice((start_index + 2)..-1)
+      |> Enum.chunk_every(2)
+      |> Enum.map(&List.flatten/1)
+      |> Enum.map(&List.delete_at(&1, 0))
+      |> Enum.map(&List.delete_at(&1, 1))
+      |> Enum.reject(&(&1 == ["\r\n", "\r\n"] or &1 == ["", ""]))
+      |> Enum.map(fn [a, b] ->
+        [a, Regex.run(~r/\d{2}-\D{3}-\d{4} \d{2}:\d{2}/, b)] |> List.flatten()
+      end)
+      |> Enum.filter(&String.match?(List.first(&1), ~r/#{@changelog_filename_prefix}*/))
+      |> Enum.map(fn [a, b] ->
+        {href_to_version(a), Timex.parse!(b, "%e-%b-%Y %H:%M", :strftime)}
+      end)
+      |> Map.new()
+
+    {:ok, %{fetch_op | :dates => dates}}
+  end
+
+  def extract_changelog_dates({:error, fetch_op}) do
+    {:error, fetch_op}
   end
 
   defp href_to_version(href) do
@@ -92,5 +196,15 @@ defmodule Changelogr.Fetcher do
     @kernel_org_url
     |> URI.parse()
     |> URI.merge(major <> "/")
+  end
+
+  # parse timestamp in format "Sat, 18 Nov 2023 19:39:36 GMT"
+  defp parse_timestamp(t) do
+    Timex.parse!(t, "%a, %d %b %Y %H:%M:%S %Z", :strftime)
+  end
+
+  def http_get(url) when is_bitstring(url) do
+    Finch.build(:get, url)
+    |> Finch.request(Changelogr.Finch)
   end
 end

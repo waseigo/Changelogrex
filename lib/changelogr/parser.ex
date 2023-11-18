@@ -1,6 +1,9 @@
 defmodule Changelogr.Commit do
   defstruct [
-    :filename,
+    :kernel_version,
+    :changelog_url,
+    :fetched_timestamp,
+    :changelog_timestamp,
     :commit,
     :author,
     :date,
@@ -16,11 +19,13 @@ defmodule Changelogr.Commit do
     :cc,
     :acked_by,
     :signed_off_by,
-    :link
+    :link,
+    :upstream_commit
   ]
 end
 
 defmodule Changelogr.Parser do
+  alias Changelogr.ChangeLog
   alias Changelogr.Commit
   # @filename "priv/static/ChangeLog*"
 
@@ -39,48 +44,65 @@ defmodule Changelogr.Parser do
     cc: "Cc",
     acked_by: "Acked-by",
     signed_off_by: "Signed-off-by",
-    link: "Link"
+    link: "Link",
+    upstream_commit: "[ Upstream commit "
   }
 
   @single_fields ["Author", "Date"]
 
-  def to_commits(textfile) do
-    textfile
-    |> to_commits_list()
-    |> Enum.map(&commit_to_struct/1)
+  @indentation "    "
+
+  def e2e(major) do
   end
 
-  def to_commits_list(textfile) do
-    textfile
-    |> Path.absname()
-    |> File.read!()
+  def changelog_to_commits(
+        %Changelogr.ChangeLog{
+          kernel_version: kernel_version,
+          url: url,
+          body: body,
+          commits: commits,
+          date: date,
+          timestamp: timestamp
+        } = changelog
+      ) do
+    body
     |> then(
       &Regex.split(~r/^commit .*\n/m, &1,
         trim: true,
         include_captures: true
       )
     )
+    # group commit xxx and body in one list
     |> Enum.chunk_every(2)
-    |> Enum.map(
-      &Kernel.++(
-        [Path.basename(textfile)],
-        &1
-      )
-    )
+    |> Enum.map(&initialize_commit_struct(&1, changelog))
   end
 
-  def commit_to_struct(commit_list_item) do
-    List.zip([
-      [:filename, :commit, :body],
-      commit_list_item
-    ])
-    |> Map.new()
-    |> then(
-      &Map.merge(
-        %Commit{},
-        &1
+  def initialize_commit_struct(commit_list_item, %ChangeLog{
+        kernel_version: kver,
+        url: cl_url,
+        date: cl_ts,
+        timestamp: fetch_ts
+      }) do
+    new_commit =
+      List.zip([
+        [:commit, :body],
+        commit_list_item
+      ])
+      |> Map.new()
+      |> then(
+        &Map.merge(
+          %Commit{},
+          &1
+        )
       )
-    )
+
+    %{
+      new_commit
+      | :kernel_version => kver,
+        :changelog_url => cl_url,
+        :changelog_timestamp => cl_ts,
+        :fetched_timestamp => fetch_ts
+    }
   end
 
   def extract_field(commit, :commit) do
@@ -95,9 +117,38 @@ defmodule Changelogr.Parser do
     |> Map.put(:commit, c_new)
   end
 
+  def extract_field(commit, :upstream_commit) do
+    field = @all_fields[:upstream_commit]
+
+    %Changelogr.Commit{body: b} = commit
+
+    {:ok, regex} =
+      Regex.compile("[[:blank:]]*?" <> Regex.escape(field) <> "[[:alnum:]]*\s\]\\n\s*")
+
+    extract =
+      Regex.scan(regex, b)
+      |> List.flatten()
+
+    if Enum.empty?(extract) do
+      commit
+    else
+      extract = hd(extract)
+      b_new = String.replace(b, extract, "")
+      {:ok, regex} = Regex.compile(Regex.escape(field) <> "(?<uc>[[:alnum:]]*)\s\]")
+
+      uc =
+        Regex.named_captures(regex, extract)
+        |> Map.get("uc")
+
+      commit
+      |> Map.put(:body, b_new)
+      |> Map.put(:upstream_commit, uc)
+    end
+  end
+
   def extract_field(commit, key) do
     field = @all_fields[key]
-    {:ok, regex} = Regex.compile("[[:blank:]]*?" <> field <> ":\s.*\n")
+    {:ok, regex} = Regex.compile("[[:blank:]]*?" <> Regex.escape(field) <> ":\s.*\n")
 
     %Changelogr.Commit{body: body} = commit
 
@@ -112,15 +163,15 @@ defmodule Changelogr.Parser do
       |> List.flatten()
 
     if is_nil(Map.get(commit, key)) do
-      new_body =
-        Enum.reduce(
-          body,
-          fn k, acc ->
-            String.replace(acc, k, "")
-          end)
-
-    commit
-      |> Map.put(:body, new_body)
+      Enum.reduce(
+        extract,
+        commit,
+        fn k, acc ->
+          b = Map.get(acc, :body)
+          b_new = String.replace(b, k, "")
+          Map.put(acc, :body, b_new)
+        end
+      )
       |> Map.put(key, clean_list(extract, field))
     else
       commit
@@ -136,8 +187,8 @@ defmodule Changelogr.Parser do
   end
 
   defp process_single_field(list, field) when is_list(list) and field == "Date" do
-    # FIXME parse date
     hd(list)
+    |> Timex.parse!("%a %b %-d %H:%M:%S %Y %z", :strftime)
   end
 
   defp process_single_field(list, field) when is_list(list) do
@@ -152,6 +203,29 @@ defmodule Changelogr.Parser do
     nil
   end
 
+  # FIXME documentation on unwrap and unindent of :body
+  def process_body(commit) do
+    body = Map.get(commit, :body)
+
+    b_new =
+      body
+      |> String.replace(@indentation, "")
+      |> String.split("\n")
+      |> Enum.map(fn x ->
+        case x do
+          "" -> "\n"
+          _ -> x <> " "
+        end
+      end)
+      |> List.to_string()
+      |> String.trim()
+      |> String.split("\n")
+      |> Enum.map(&String.trim(&1))
+
+    commit
+    |> Map.put(:body, b_new)
+  end
+
   def process_empty_list(list) do
     if Enum.empty?(list) do
       nil
@@ -160,11 +234,11 @@ defmodule Changelogr.Parser do
     end
   end
 
-  def extract_all_fields(x) do
+  def extract_all_fields(%Commit{} = commit) do
     @all_fields
     |> Map.keys()
     |> Enum.reduce(
-      x,
+      commit,
       fn k, acc ->
         extract_field(
           acc,
@@ -172,5 +246,6 @@ defmodule Changelogr.Parser do
         )
       end
     )
+    |> process_body()
   end
 end
