@@ -104,25 +104,24 @@ defmodule Changelogr.Parser do
     extract =
       body
       |> then(
-        &Regex.split(regex, &1,
+        &Regex.scan(regex, &1,
           trim: true,
           include_captures: true
         )
       )
+      |> List.flatten()
 
     if is_nil(Map.get(commit, key)) do
-      specifics =
-        extract
-        |> Enum.filter(fn x -> String.contains?(x, field <> ":") end)
-
       new_body =
-        (extract -- specifics)
-        |> Enum.join()
-        |> String.trim()
+        Enum.reduce(
+          body,
+          fn k, acc ->
+            String.replace(acc, k, "")
+          end)
 
-      commit
+    commit
       |> Map.put(:body, new_body)
-      |> Map.put(key, clean_list(specifics, field))
+      |> Map.put(key, clean_list(extract, field))
     else
       commit
     end
