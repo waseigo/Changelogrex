@@ -83,18 +83,20 @@ defmodule Changelogr.Parser do
     )
   end
 
-  def extract_field(commit, _, :commit) do
+  def extract_field(commit, :commit) do
     %Changelogr.Commit{commit: c} = commit
 
     c_new =
       c
       |> String.replace("commit ", "")
+      |> String.trim()
 
     commit
     |> Map.put(:commit, c_new)
   end
 
-  def extract_field(commit, field, key) do
+  def extract_field(commit, key) do
+    field = @all_fields[key]
     {:ok, regex} = Regex.compile("[[:blank:]]*?" <> field <> ":\s.*\n")
 
     %Changelogr.Commit{body: body} = commit
@@ -108,18 +110,22 @@ defmodule Changelogr.Parser do
         )
       )
 
-    specifics =
-      extract
-      |> Enum.filter(fn x -> String.contains?(x, field <> ":") end)
+    if is_nil(Map.get(commit, key)) do
+      specifics =
+        extract
+        |> Enum.filter(fn x -> String.contains?(x, field <> ":") end)
 
-    new_body =
-      (extract -- specifics)
-      |> Enum.join()
-      |> String.trim()
+      new_body =
+        (extract -- specifics)
+        |> Enum.join()
+        |> String.trim()
 
-    commit
-    |> Map.put(:body, new_body)
-    |> Map.put(key, clean_list(specifics, field))
+      commit
+      |> Map.put(:body, new_body)
+      |> Map.put(key, clean_list(specifics, field))
+    else
+      commit
+    end
   end
 
   defp clean_list(list, field) do
@@ -128,6 +134,11 @@ defmodule Changelogr.Parser do
     |> Enum.map(&String.trim(&1))
     |> process_empty_list()
     |> process_single_field(field)
+  end
+
+  defp process_single_field(list, field) when is_list(list) and field == "Date" do
+    # FIXME parse date
+    hd(list)
   end
 
   defp process_single_field(list, field) when is_list(list) do
@@ -158,7 +169,6 @@ defmodule Changelogr.Parser do
       fn k, acc ->
         extract_field(
           acc,
-          @all_fields[k],
           k
         )
       end
