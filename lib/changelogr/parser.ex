@@ -49,20 +49,13 @@ defmodule Changelogr.Parser do
   }
 
   @single_fields ["Author", "Date"]
-
   @indentation "    "
-
-  def e2e(major) do
-  end
+  @kernel_version_regex ~r/^(0|[1-9]\d*)\.(\d{1,2})(?:\.(\d{1,3}))?$/
+  @kernel_version_regex_named ~r/^(?<major>0|[1-9]\d*)\.(?<minor>\d{1,2})(?:\.(?<patch>\d{1,3}))?$/
 
   def changelog_to_commits(
         %Changelogr.ChangeLog{
-          kernel_version: kernel_version,
-          url: url,
-          body: body,
-          commits: commits,
-          date: date,
-          timestamp: timestamp
+          body: body
         } = changelog
       ) do
     body
@@ -247,5 +240,33 @@ defmodule Changelogr.Parser do
       end
     )
     |> process_body()
+  end
+
+  def validate_and_parse_kernel_version(v) when is_bitstring(v) do
+    case Regex.match?(@kernel_version_regex, v) do
+      false ->
+        {:error, "Could not validate kernel version"}
+
+      true ->
+        {:ok, parse_kernel_version!(v)}
+    end
+  end
+
+  def parse_kernel_version!(v) when is_bitstring(v) do
+    Regex.named_captures(@kernel_version_regex_named, v)
+    |> Map.new(fn {k, v} ->
+      {
+        String.to_atom(k),
+        case v do
+          "" -> nil
+          _ -> String.to_integer(v)
+        end
+      }
+    end)
+  end
+
+  def format_version_string(%{major: major, minor: minor, patch: patch}) do
+    "#{major}.#{minor}" <>
+      if patch != nil, do: ".#{patch}", else: ""
   end
 end

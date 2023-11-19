@@ -25,8 +25,45 @@ defmodule Changelogr.ChangeLog do
 end
 
 defmodule Changelogr.Fetcher do
+  alias Changelogr.ChangeLog
   @kernel_org_url "https://cdn.kernel.org/pub/linux/kernel/"
   @changelog_filename_prefix "ChangeLog-"
+
+  def fetch_changelog_for_version(v) when is_bitstring(v) do
+    r = Changelogr.Parser.validate_and_parse_kernel_version(v)
+
+    case r do
+      {:error, _} ->
+        r
+
+      {:ok, p} ->
+        subdir = "v" <> Integer.to_string(p.major) <> ".x"
+        available = fetch_available(subdir)
+
+        case available do
+          {:error, _} ->
+            {:error, "Could not fetch list of ChangeLogs"}
+
+          {:ok, a} ->
+
+            case v in Map.keys(a.hrefs) do
+              false -> {:error, "No ChangeLog found for version #{v}"}
+
+              true ->
+                %ChangeLog{
+                  kernel_version: v,
+                  url: Map.get(a.hrefs, v),
+                  date: Map.get(a.dates, v),
+                  timestamp: a.timestamp
+                }
+                |> fetch_changelog()
+
+            end
+
+
+        end
+    end
+  end
 
   def fetch_changelog(changelog) do
     response = http_get(changelog.url)
@@ -192,7 +229,7 @@ defmodule Changelogr.Fetcher do
     {version, uri}
   end
 
-  defp baseurl(major) do
+  def baseurl(major) do
     @kernel_org_url
     |> URI.parse()
     |> URI.merge(major <> "/")
