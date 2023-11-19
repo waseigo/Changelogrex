@@ -1,4 +1,6 @@
-# Changelogr
+# Changelogrex
+
+🐧🌾🗒️🫅 (Linux kernel changelog rex)
 
 Fetches and parses Linux kernel ChangeLogs from [https://kernel.org/pub/linux/kernel/](https://kernel.org/pub/linux/kernel/) into Elixir structs that can later be handled with Ecto.
 
