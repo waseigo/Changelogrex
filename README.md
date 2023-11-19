@@ -1,8 +1,8 @@
 # Changelogr
 
-Fetches and parsed Linux kernel ChangeLogs from [https://kernel.org/pub/linux/kernel/](https://kernel.org/pub/linux/kernel/) into Elixir structs.
+Fetches and parses Linux kernel ChangeLogs from [https://kernel.org/pub/linux/kernel/](https://kernel.org/pub/linux/kernel/) into Elixir structs that can later be handled with Ecto.
 
-## Fetch Linux kernel v6.x ChangeLogs and process them into commits in parallel
+## Batch fetch-and-process Linux kernel v6.x ChangeLogs into properly parsed commits
 
 First, check which ChangeLogs are available.
 
