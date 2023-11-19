@@ -163,14 +163,14 @@ defmodule Changelogr.Fetcher do
       |> Floki.parse_document!()
       |> Floki.find("a")
       |> Stream.map(&ahref_to_uri(&1, url))
-      |> Stream.filter(&String.match?(elem(&1, 1), ~r/#{@changelog_filename_prefix}*/))
+      |> Stream.filter(&String.match?(elem(&1, 1), ~r/#{@changelog_filename_prefix}*(?!.*\.sign)/))
       |> Enum.to_list()
       |> Map.new()
 
     {:ok, %{fetch_op | :hrefs => hrefs}}
   end
 
-  def extract_changelog_urls({:error, fetch_op}) do
+  def extract_changelog_hrefs({:error, fetch_op}) do
     {:error, fetch_op}
   end
 
@@ -192,7 +192,7 @@ defmodule Changelogr.Fetcher do
       |> Enum.map(fn [a, b] ->
         [a, Regex.run(~r/\d{2}-\D{3}-\d{4} \d{2}:\d{2}/, b)] |> List.flatten()
       end)
-      |> Enum.filter(&String.match?(List.first(&1), ~r/#{@changelog_filename_prefix}*/))
+      |> Enum.filter(&String.match?(List.first(&1), ~r/#{@changelog_filename_prefix}*(?!.*\.sign)/))
       |> Enum.map(fn [a, b] ->
         {href_to_version(a), Timex.parse!(b, "%e-%b-%Y %H:%M", :strftime)}
       end)
@@ -241,7 +241,20 @@ defmodule Changelogr.Fetcher do
   end
 
   def http_get(url) when is_bitstring(url) do
+    r =
     Finch.build(:get, url)
     |> Finch.request(Changelogr.Finch)
+
+    case r do
+      {:ok, response} ->
+        case response.status do
+          200 -> r
+          _ -> {:error, "HTTP status #{response.status}"}
+        end
+      {:error, _} -> r
+
+    end
+
+
   end
 end
