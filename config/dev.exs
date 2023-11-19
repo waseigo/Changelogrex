@@ -2,13 +2,14 @@ import Config
 
 # Configure your database
 config :changelogr, Changelogr.Repo,
-  username: "postgres",
-  password: "postgres",
-  hostname: "postgres.waseigo.com",
-  database: "changelogr_dev",
-  stacktrace: true,
-  show_sensitive_data_on_connection_error: true,
-  pool_size: 10
+  database: "changelogr.db"
+#  username: "postgres",
+#  password: "postgres",
+#  hostname: "postgres.waseigo.com",
+#  database: "changelogr_dev",
+#  stacktrace: true,
+#  show_sensitive_data_on_connection_error: true,
+#  pool_size: 10
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
