@@ -183,14 +183,3 @@ iex> hd processed
   upstream_commit: nil
 }
 ```
-
-
-
-
-
-
-
-
-
-
-
