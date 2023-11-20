@@ -1,0 +1,29 @@
+<.header>
+  Fetchop <%= @fetchop.id %>
+  <:subtitle>This is a fetchop record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/fetchops/#{@fetchop}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit fetchop</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Url"><%= @fetchop.url %></:item>
+  <:item title="Timestamp"><%= @fetchop.timestamp %></:item>
+  <:item title="Status"><%= @fetchop.status %></:item>
+  <:item title="Errors"><%= @fetchop.errors %></:item>
+</.list>
+
+<.back navigate={~p"/fetchops"}>Back to fetchops</.back>
+
+<.modal :if={@live_action == :edit} id="fetchop-modal" show on_cancel={JS.patch(~p"/fetchops/#{@fetchop}")}>
+  <.live_component
+    module={ChangelogrWeb.FetchopLive.FormComponent}
+    id={@fetchop.id}
+    title={@page_title}
+    action={@live_action}
+    fetchop={@fetchop}
+    patch={~p"/fetchops/#{@fetchop}"}
+  />
+</.modal>

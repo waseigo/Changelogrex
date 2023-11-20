@@ -1,0 +1,44 @@
+<.header>
+  Listing Fetchops
+  <:actions>
+    <.link patch={~p"/fetchops/new"}>
+      <.button>New Fetchop</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="fetchops"
+  rows={@streams.fetchops}
+  row_click={fn {_id, fetchop} -> JS.navigate(~p"/fetchops/#{fetchop}") end}
+>
+  <:col :let={{_id, fetchop}} label="Url"><%= fetchop.url %></:col>
+  <:col :let={{_id, fetchop}} label="Timestamp"><%= fetchop.timestamp %></:col>
+  <:col :let={{_id, fetchop}} label="Status"><%= fetchop.status %></:col>
+  <:col :let={{_id, fetchop}} label="Errors"><%= fetchop.errors %></:col>
+  <:action :let={{_id, fetchop}}>
+    <div class="sr-only">
+      <.link navigate={~p"/fetchops/#{fetchop}"}>Show</.link>
+    </div>
+    <.link patch={~p"/fetchops/#{fetchop}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, fetchop}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: fetchop.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="fetchop-modal" show on_cancel={JS.patch(~p"/fetchops")}>
+  <.live_component
+    module={ChangelogrWeb.FetchopLive.FormComponent}
+    id={@fetchop.id || :new}
+    title={@page_title}
+    action={@live_action}
+    fetchop={@fetchop}
+    patch={~p"/fetchops"}
+  />
+</.modal>

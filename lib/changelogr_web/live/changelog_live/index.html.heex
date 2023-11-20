@@ -1,0 +1,44 @@
+<.header>
+  Listing Changelogs
+  <:actions>
+    <.link patch={~p"/changelogs/new"}>
+      <.button>New Changelog</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="changelogs"
+  rows={@streams.changelogs}
+  row_click={fn {_id, changelog} -> JS.navigate(~p"/changelogs/#{changelog}") end}
+>
+  <:col :let={{_id, changelog}} label="Kernel version"><%= changelog.kernel_version %></:col>
+  <:col :let={{_id, changelog}} label="Url"><%= changelog.url %></:col>
+  <:col :let={{_id, changelog}} label="Date"><%= changelog.date %></:col>
+  <:col :let={{_id, changelog}} label="Timestamp"><%= changelog.timestamp %></:col>
+  <:action :let={{_id, changelog}}>
+    <div class="sr-only">
+      <.link navigate={~p"/changelogs/#{changelog}"}>Show</.link>
+    </div>
+    <.link patch={~p"/changelogs/#{changelog}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, changelog}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: changelog.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="changelog-modal" show on_cancel={JS.patch(~p"/changelogs")}>
+  <.live_component
+    module={ChangelogrWeb.ChangelogLive.FormComponent}
+    id={@changelog.id || :new}
+    title={@page_title}
+    action={@live_action}
+    changelog={@changelog}
+    patch={~p"/changelogs"}
+  />
+</.modal>

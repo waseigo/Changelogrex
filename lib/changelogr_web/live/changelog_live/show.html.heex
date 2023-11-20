@@ -1,0 +1,29 @@
+<.header>
+  Changelog <%= @changelog.id %>
+  <:subtitle>This is a changelog record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/changelogs/#{@changelog}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit changelog</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Kernel version"><%= @changelog.kernel_version %></:item>
+  <:item title="Url"><%= @changelog.url %></:item>
+  <:item title="Date"><%= @changelog.date %></:item>
+  <:item title="Timestamp"><%= @changelog.timestamp %></:item>
+</.list>
+
+<.back navigate={~p"/changelogs"}>Back to changelogs</.back>
+
+<.modal :if={@live_action == :edit} id="changelog-modal" show on_cancel={JS.patch(~p"/changelogs/#{@changelog}")}>
+  <.live_component
+    module={ChangelogrWeb.ChangelogLive.FormComponent}
+    id={@changelog.id}
+    title={@page_title}
+    action={@live_action}
+    changelog={@changelog}
+    patch={~p"/changelogs/#{@changelog}"}
+  />
+</.modal>
