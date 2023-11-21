@@ -20,11 +20,13 @@ defmodule ChangelogrWeb.ChangelogLive.FormComponent do
         phx-submit="save"
       >
         <.input field={@form[:kernel_version]} type="text" label="Kernel version" />
+        <%#
         <.input field={@form[:url]} type="text" label="Url" />
         <.input field={@form[:date]} type="datetime-local" label="Date" />
         <.input field={@form[:timestamp]} type="datetime-local" label="Timestamp" />
+        %>
         <:actions>
-          <.button phx-disable-with="Saving...">Save Changelog</.button>
+          <.button phx-disable-with="Saving..."><%= gettext("Save") %></.button>
         </:actions>
       </.simple_form>
     </div>
@@ -48,10 +50,27 @@ defmodule ChangelogrWeb.ChangelogLive.FormComponent do
       |> Kernels.change_changelog(changelog_params)
       |> Map.put(:action, :validate)
 
+    IO.inspect Map.get(changelog_params, "kernel_version") # FIXME
+
     {:noreply, assign_form(socket, changeset)}
   end
 
   def handle_event("save", %{"changelog" => changelog_params}, socket) do
+    IO.inspect changelog_params
+    v = Map.get(changelog_params, "kernel_version")
+
+    {:ok, cl} = Changelogr.Fetcher.fetch_changelog_for_version(v)
+
+    IO.inspect cl
+
+    changelog_params =
+        changelog_params
+        |> Map.put("url", cl.url)
+        |> Map.put("date", cl.date)
+        |> Map.put("timestamp", cl.timestamp)
+
+    IO.inspect changelog_params
+
     save_changelog(socket, socket.assigns.action, changelog_params)
   end
 
