@@ -235,6 +235,21 @@ defmodule Changelogr.Fetcher do
     |> URI.merge(major <> "/")
   end
 
+
+  def kernel_version_to_subdir(v) when is_bitstring(v) do
+    major = Changelogr.Parser.parse_kernel_version!(v) |> Map.get(:major)
+    "v" <> Integer.to_string(major) <> ".x"
+  end
+
+  def kernel_version_to_url(v) when is_bitstring(v) do
+    cl_filename = @changelog_filename_prefix <> v
+      v
+      |> kernel_version_to_subdir()
+      |> baseurl()
+      |> URI.merge(cl_filename)
+      |> URI.to_string()
+  end
+
   # parse timestamp in format "Sat, 18 Nov 2023 19:39:36 GMT"
   defp parse_timestamp(t) do
     Timex.parse!(t, "%a, %d %b %Y %H:%M:%S %Z", :strftime)
