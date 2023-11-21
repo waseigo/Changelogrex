@@ -20,5 +20,6 @@ defmodule Changelogr.Kernels.Changelog do
     # |> validate_required([:kernel_version, :url, :date, :timestamp])
     |> validate_required([:kernel_version])
     |> validate_format(:kernel_version, ~r/^(0|[1-9]\d*)\.(\d{1,2})(?:\.(\d{1,3}))?$/)
+    |> unique_constraint(:kernel_version)
   end
 end
