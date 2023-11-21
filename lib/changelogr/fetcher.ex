@@ -37,17 +37,19 @@ defmodule Changelogr.Fetcher do
         r
 
       {:ok, p} ->
-        subdir = "v" <> Integer.to_string(p.major) <> ".x"
-        available = fetch_available(subdir)
+        available =
+          p.major
+          |> kernel_version_to_subdir()
+          |> fetch_available()
 
         case available do
           {:error, _} ->
             {:error, "Could not fetch list of ChangeLogs"}
 
           {:ok, a} ->
-
             case v in Map.keys(a.hrefs) do
-              false -> {:error, "No ChangeLog found for version #{v}"}
+              false ->
+                {:error, "No ChangeLog found for version #{v}"}
 
               true ->
                 %ChangeLog{
@@ -57,10 +59,7 @@ defmodule Changelogr.Fetcher do
                   timestamp: a.timestamp
                 }
                 |> fetch_changelog()
-
             end
-
-
         end
     end
   end
@@ -163,7 +162,9 @@ defmodule Changelogr.Fetcher do
       |> Floki.parse_document!()
       |> Floki.find("a")
       |> Stream.map(&ahref_to_uri(&1, url))
-      |> Stream.filter(&String.match?(elem(&1, 1), ~r/#{@changelog_filename_prefix}*(?!.*\.sign)/))
+      |> Stream.filter(
+        &String.match?(elem(&1, 1), ~r/#{@changelog_filename_prefix}*(?!.*\.sign)/)
+      )
       |> Enum.to_list()
       |> Map.new()
 
@@ -192,7 +193,9 @@ defmodule Changelogr.Fetcher do
       |> Enum.map(fn [a, b] ->
         [a, Regex.run(~r/\d{2}-\D{3}-\d{4} \d{2}:\d{2}/, b)] |> List.flatten()
       end)
-      |> Enum.filter(&String.match?(List.first(&1), ~r/#{@changelog_filename_prefix}*(?!.*\.sign)/))
+      |> Enum.filter(
+        &String.match?(List.first(&1), ~r/#{@changelog_filename_prefix}*(?!.*\.sign)/)
+      )
       |> Enum.map(fn [a, b] ->
         {href_to_version(a), Timex.parse!(b, "%e-%b-%Y %H:%M", :strftime)}
       end)
@@ -235,7 +238,6 @@ defmodule Changelogr.Fetcher do
     |> URI.merge(major <> "/")
   end
 
-
   def kernel_version_to_subdir(v) when is_bitstring(v) do
     major = Changelogr.Parser.parse_kernel_version!(v) |> Map.get(:major)
     "v" <> Integer.to_string(major) <> ".x"
@@ -243,11 +245,12 @@ defmodule Changelogr.Fetcher do
 
   def kernel_version_to_url(v) when is_bitstring(v) do
     cl_filename = @changelog_filename_prefix <> v
-      v
-      |> kernel_version_to_subdir()
-      |> baseurl()
-      |> URI.merge(cl_filename)
-      |> URI.to_string()
+
+    v
+    |> kernel_version_to_subdir()
+    |> baseurl()
+    |> URI.merge(cl_filename)
+    |> URI.to_string()
   end
 
   # parse timestamp in format "Sat, 18 Nov 2023 19:39:36 GMT"
@@ -257,8 +260,8 @@ defmodule Changelogr.Fetcher do
 
   def http_get(url) when is_bitstring(url) do
     r =
-    Finch.build(:get, url)
-    |> Finch.request(Changelogr.Finch)
+      Finch.build(:get, url)
+      |> Finch.request(Changelogr.Finch)
 
     case r do
       {:ok, response} ->
@@ -266,10 +269,9 @@ defmodule Changelogr.Fetcher do
           200 -> r
           _ -> {:error, "HTTP status #{response.status}"}
         end
-      {:error, _} -> r
 
+      {:error, _} ->
+        r
     end
-
-
   end
 end
