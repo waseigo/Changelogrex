@@ -1,8 +1,7 @@
 import Config
 
 # Configure your database
-config :changelogr, Changelogr.Repo,
-  database: "changelogr.db"
+config :changelogr, Changelogr.Repo, database: "changelogr.db"
 #  username: "postgres",
 #  password: "postgres",
 #  hostname: "postgres.waseigo.com",

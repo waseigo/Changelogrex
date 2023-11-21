@@ -7,10 +7,9 @@ defmodule ChangelogrWeb.UserConfirmationInstructionsLive do
     ~H"""
     <div class="mx-auto max-w-sm">
       <.header class="text-center">
-      <%= gettext("No confirmation instructions received?") %>
+        <%= gettext("No confirmation instructions received?") %>
         <:subtitle>
-        <%= gettext("We'll send a new confirmation link to your inbox") %>
-
+          <%= gettext("We'll send a new confirmation link to your inbox") %>
         </:subtitle>
       </.header>
 
@@ -18,7 +17,7 @@ defmodule ChangelogrWeb.UserConfirmationInstructionsLive do
         <.input field={@form[:email]} type="email" placeholder="Email" required />
         <:actions>
           <.button phx-disable-with={gettext("Sending...")} class="w-full">
-          <%= gettext("Resend confirmation instructions") %>
+            <%= gettext("Resend confirmation instructions") %>
           </.button>
         </:actions>
       </.simple_form>

@@ -42,7 +42,6 @@ defmodule ChangelogrWeb.Router do
 
       live_dashboard "/dashboard", metrics: ChangelogrWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
-
     end
   end
 
@@ -65,15 +64,15 @@ defmodule ChangelogrWeb.Router do
   scope "/", ChangelogrWeb do
     pipe_through [:browser, :require_authenticated_user]
 
-        # Changelogs
-        live "/changelogs/new", ChangelogLive.Index, :new
-        live "/changelogs/:id/edit", ChangelogLive.Index, :edit
-        live "/changelogs/:id/show/edit", ChangelogLive.Show, :edit
+    # Changelogs
+    live "/changelogs/new", ChangelogLive.Index, :new
+    live "/changelogs/:id/edit", ChangelogLive.Index, :edit
+    live "/changelogs/:id/show/edit", ChangelogLive.Show, :edit
 
-        # Fetchops
-        live "/fetchops/new", FetchopLive.Index, :new
-        live "/fetchops/:id/edit", FetchopLive.Index, :edit
-        live "/fetchops/:id/show/edit", FetchopLive.Show, :edit
+    # Fetchops
+    live "/fetchops/new", FetchopLive.Index, :new
+    live "/fetchops/:id/edit", FetchopLive.Index, :edit
+    live "/fetchops/:id/show/edit", FetchopLive.Show, :edit
 
     live_session :require_authenticated_user,
       on_mount: [{ChangelogrWeb.UserAuth, :ensure_authenticated}] do

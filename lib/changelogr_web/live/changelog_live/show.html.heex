@@ -17,7 +17,12 @@
 
 <.back navigate={~p"/changelogs"}>Back to changelogs</.back>
 
-<.modal :if={@live_action == :edit} id="changelog-modal" show on_cancel={JS.patch(~p"/changelogs/#{@changelog}")}>
+<.modal
+  :if={@live_action == :edit}
+  id="changelog-modal"
+  show
+  on_cancel={JS.patch(~p"/changelogs/#{@changelog}")}
+>
   <.live_component
     module={ChangelogrWeb.ChangelogLive.FormComponent}
     id={@changelog.id}

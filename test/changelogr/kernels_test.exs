@@ -21,7 +21,12 @@ defmodule Changelogr.KernelsTest do
     end
 
     test "create_changelog/1 with valid data creates a changelog" do
-      valid_attrs = %{date: ~N[2023-11-19 20:49:00], kernel_version: "some kernel_version", timestamp: ~U[2023-11-19 20:49:00Z], url: "some url"}
+      valid_attrs = %{
+        date: ~N[2023-11-19 20:49:00],
+        kernel_version: "some kernel_version",
+        timestamp: ~U[2023-11-19 20:49:00Z],
+        url: "some url"
+      }
 
       assert {:ok, %Changelog{} = changelog} = Kernels.create_changelog(valid_attrs)
       assert changelog.date == ~N[2023-11-19 20:49:00]
@@ -36,7 +41,13 @@ defmodule Changelogr.KernelsTest do
 
     test "update_changelog/2 with valid data updates the changelog" do
       changelog = changelog_fixture()
-      update_attrs = %{date: ~N[2023-11-20 20:49:00], kernel_version: "some updated kernel_version", timestamp: ~U[2023-11-20 20:49:00Z], url: "some updated url"}
+
+      update_attrs = %{
+        date: ~N[2023-11-20 20:49:00],
+        kernel_version: "some updated kernel_version",
+        timestamp: ~U[2023-11-20 20:49:00Z],
+        url: "some updated url"
+      }
 
       assert {:ok, %Changelog{} = changelog} = Kernels.update_changelog(changelog, update_attrs)
       assert changelog.date == ~N[2023-11-20 20:49:00]

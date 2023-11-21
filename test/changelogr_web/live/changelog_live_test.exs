@@ -4,8 +4,18 @@ defmodule ChangelogrWeb.ChangelogLiveTest do
   import Phoenix.LiveViewTest
   import Changelogr.KernelsFixtures
 
-  @create_attrs %{date: "2023-11-19T20:49:00", kernel_version: "some kernel_version", timestamp: "2023-11-19T20:49:00Z", url: "some url"}
-  @update_attrs %{date: "2023-11-20T20:49:00", kernel_version: "some updated kernel_version", timestamp: "2023-11-20T20:49:00Z", url: "some updated url"}
+  @create_attrs %{
+    date: "2023-11-19T20:49:00",
+    kernel_version: "some kernel_version",
+    timestamp: "2023-11-19T20:49:00Z",
+    url: "some url"
+  }
+  @update_attrs %{
+    date: "2023-11-20T20:49:00",
+    kernel_version: "some updated kernel_version",
+    timestamp: "2023-11-20T20:49:00Z",
+    url: "some updated url"
+  }
   @invalid_attrs %{date: nil, kernel_version: nil, timestamp: nil, url: nil}
 
   defp create_changelog(_) do

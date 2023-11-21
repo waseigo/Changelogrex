@@ -21,7 +21,12 @@ defmodule Changelogr.FetchopsTest do
     end
 
     test "create_fetchop/1 with valid data creates a fetchop" do
-      valid_attrs = %{errors: "some errors", status: 42, timestamp: ~U[2023-11-19 22:17:00Z], url: "some url"}
+      valid_attrs = %{
+        errors: "some errors",
+        status: 42,
+        timestamp: ~U[2023-11-19 22:17:00Z],
+        url: "some url"
+      }
 
       assert {:ok, %Fetchop{} = fetchop} = Fetchops.create_fetchop(valid_attrs)
       assert fetchop.errors == "some errors"
@@ -36,7 +41,13 @@ defmodule Changelogr.FetchopsTest do
 
     test "update_fetchop/2 with valid data updates the fetchop" do
       fetchop = fetchop_fixture()
-      update_attrs = %{errors: "some updated errors", status: 43, timestamp: ~U[2023-11-20 22:17:00Z], url: "some updated url"}
+
+      update_attrs = %{
+        errors: "some updated errors",
+        status: 43,
+        timestamp: ~U[2023-11-20 22:17:00Z],
+        url: "some updated url"
+      }
 
       assert {:ok, %Fetchop{} = fetchop} = Fetchops.update_fetchop(fetchop, update_attrs)
       assert fetchop.errors == "some updated errors"

@@ -17,7 +17,7 @@ defmodule Changelogr.Kernels.Changelog do
   def changeset(changelog, attrs) do
     changelog
     |> cast(attrs, [:kernel_version, :url, :date, :timestamp])
-    #|> validate_required([:kernel_version, :url, :date, :timestamp])
+    # |> validate_required([:kernel_version, :url, :date, :timestamp])
     |> validate_required([:kernel_version])
     |> validate_format(:kernel_version, ~r/^(0|[1-9]\d*)\.(\d{1,2})(?:\.(\d{1,3}))?$/)
   end

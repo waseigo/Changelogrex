@@ -4,8 +4,18 @@ defmodule ChangelogrWeb.FetchopLiveTest do
   import Phoenix.LiveViewTest
   import Changelogr.FetchopsFixtures
 
-  @create_attrs %{errors: "some errors", status: 42, timestamp: "2023-11-19T22:17:00Z", url: "some url"}
-  @update_attrs %{errors: "some updated errors", status: 43, timestamp: "2023-11-20T22:17:00Z", url: "some updated url"}
+  @create_attrs %{
+    errors: "some errors",
+    status: 42,
+    timestamp: "2023-11-19T22:17:00Z",
+    url: "some url"
+  }
+  @update_attrs %{
+    errors: "some updated errors",
+    status: 43,
+    timestamp: "2023-11-20T22:17:00Z",
+    url: "some updated url"
+  }
   @invalid_attrs %{errors: nil, status: nil, timestamp: nil, url: nil}
 
   defp create_fetchop(_) do

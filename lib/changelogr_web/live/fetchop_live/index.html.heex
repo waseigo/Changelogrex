@@ -32,7 +32,12 @@
   </:action>
 </.table>
 
-<.modal :if={@live_action in [:new, :edit]} id="fetchop-modal" show on_cancel={JS.patch(~p"/fetchops")}>
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="fetchop-modal"
+  show
+  on_cancel={JS.patch(~p"/fetchops")}
+>
   <.live_component
     module={ChangelogrWeb.FetchopLive.FormComponent}
     id={@fetchop.id || :new}
