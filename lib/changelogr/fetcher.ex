@@ -38,7 +38,7 @@ defmodule Changelogr.Fetcher do
 
       {:ok, p} ->
         available =
-          p.major
+          v
           |> kernel_version_to_subdir()
           |> fetch_available()
 
