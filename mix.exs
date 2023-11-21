@@ -54,7 +54,8 @@ defmodule Changelogr.MixProject do
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:timex, "~> 3.7"},
-      {:credo, "~> 1.7"}
+      {:credo, "~> 1.7"},
+      {:ex_doc, "~> 0.27", only: :dev, runtime: false}
     ]
   end
 
