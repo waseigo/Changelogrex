@@ -16,6 +16,6 @@ defmodule ChangelogrWeb.ChangelogLive.Show do
      |> assign(:changelog, Kernels.get_changelog!(id))}
   end
 
-  defp page_title(:show), do: "Show Changelog"
-  defp page_title(:edit), do: "Edit Changelog"
+  defp page_title(:show), do: gettext("Show Changelog")
+  defp page_title(:edit), do: gettext("Edit Changelog")
 end
