@@ -15,6 +15,9 @@ defmodule Changelogr.Commit do
     :suggested_by,
     :fixes,
     :reviewed_by,
+    :co_developed_by,
+    :stable_dep_of,
+    :debugged_by,
     :closes,
     :cc,
     :acked_by,
@@ -27,7 +30,6 @@ end
 defmodule Changelogr.Parser do
   alias Changelogr.ChangeLog
   alias Changelogr.Commit
-  alias Changelogr.Fetcher
   # @filename "priv/static/ChangeLog*"
 
   @all_fields %{
@@ -41,12 +43,18 @@ defmodule Changelogr.Parser do
     suggested_by: "Suggested-by",
     fixes: "Fixes",
     reviewed_by: "Reviewed-by",
+    co_developed_by: "Co-developed-by",
+    stable_dep_of: "Stable-dep-of",
+    debugged_by: "Debugged-by",
     closes: "Closes",
     cc: "Cc",
     acked_by: "Acked-by",
     signed_off_by: "Signed-off-by",
     link: "Link",
-    upstream_commit: "[ Upstream commit "
+    upstream_commit: [
+      ~r/\[ Upstream commit\s(?<uc>[[:alnum:]]*)\s\]\n/,
+      ~r/commit\s(?<uc>[[:alnum:]]*)\supstream\.\n/
+    ]
   }
 
   @single_fields ["Author", "Date"]
@@ -112,27 +120,21 @@ defmodule Changelogr.Parser do
   end
 
   def extract_field(commit, :upstream_commit) do
-    field = @all_fields[:upstream_commit]
+    regexes = @all_fields[:upstream_commit]
 
     %Changelogr.Commit{body: b} = commit
 
-    {:ok, regex} =
-      Regex.compile("[[:blank:]]*?" <> Regex.escape(field) <> "[[:alnum:]]*\s\]\\n\s*")
-
-    extract =
-      Regex.scan(regex, b)
+    scan =
+      regexes
+      |> Enum.map(&Regex.scan(&1, b))
       |> List.flatten()
 
-    if Enum.empty?(extract) do
+    if Enum.empty?(scan) do
       commit
     else
-      extract = hd(extract)
-      b_new = String.replace(b, extract, "")
-      {:ok, regex} = Regex.compile(Regex.escape(field) <> "(?<uc>[[:alnum:]]*)\s\]")
+      [extract, uc] = scan
 
-      uc =
-        Regex.named_captures(regex, extract)
-        |> Map.get("uc")
+      b_new = String.replace(b, extract, "")
 
       commit
       |> Map.put(:body, b_new)
@@ -197,24 +199,25 @@ defmodule Changelogr.Parser do
     nil
   end
 
-  # FIXME documentation on unwrap and unindent of :body
   def process_body(commit) do
     body = Map.get(commit, :body)
+    {:ok, regex} = Regex.compile(@indentation)
 
-    b_new =
-      body
-      |> String.replace(@indentation, "")
-      |> String.split("\n")
-      |> Enum.map(fn x ->
-        case x do
-          "" -> "\n"
-          _ -> x <> " "
-        end
-      end)
-      |> List.to_string()
-      |> String.trim()
-      |> String.split("\n")
-      |> Enum.map(&String.trim(&1))
+    # new with regex and without splitting into paragraphs because it was breaking kernel dmesg etc.
+    b_new = Regex.replace(regex, body, "")
+    # body
+    # |> String.replace(@indentation, "")
+    # |> String.split("\n")
+    # |> Enum.map(fn x ->
+    #   case x do
+    #     "" -> "\n"
+    #     _ -> x <> " "
+    #   end
+    # end)
+    # |> List.to_string()
+    # |> String.trim()
+    # |> String.split("\n")
+    # |> Enum.map(&String.trim(&1))
 
     commit
     |> Map.put(:body, b_new)
