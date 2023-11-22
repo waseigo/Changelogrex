@@ -2,11 +2,13 @@
   <div class="flex items-center justify-between border-b border-zinc-100 py-3 text-sm">
     <div class="flex items-center gap-4">
       <a href="/">
-        <img src={~p"/images/logo.svg"} width="36" />
+        <h1 class="text-brand mt-10 flex items-center text-sm font-semibold leading-6">
+          🐧🌾🗒️🫅 Changelogrex
+          <small class="bg-brand/5 text-[0.8125rem] ml-3 rounded-full px-2 font-medium leading-6">
+            v<%= Application.spec(:changelogr, :vsn) %>
+          </small>
+        </h1>
       </a>
-      <p class="bg-brand/5 text-brand rounded-full px-2 font-medium leading-6">
-        v<%= Application.spec(:phoenix, :vsn) %>
-      </p>
     </div>
     <div class="flex items-center gap-4 font-semibold leading-6 text-zinc-900">
       <a href={~p"/changelogs"} class="hover:text-zinc-700">

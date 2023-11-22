@@ -1,5 +1,5 @@
 <.header>
-  Commit <%= @commit.id %>
+  Commit <%= @commit.commit %>
   <:subtitle>This is a commit record from your database.</:subtitle>
   <:actions>
     <.link patch={~p"/commits/#{@commit}/show/edit"} phx-click={JS.push_focus()}>
@@ -9,8 +9,10 @@
 </.header>
 
 <.list>
-  <:item title="Commit"><%= @commit.commit %></:item>
-  <:item title="Body"><%= @commit.body %></:item>
+  <!--   <:item title="Commit"><%= @commit.commit %></:item> -->
+  <:item title="Body">
+    <pre><%= @commit.body %></pre>
+  </:item>
 </.list>
 
 <.back navigate={~p"/commits"}>Back to commits</.back>
