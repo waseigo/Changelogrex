@@ -57,6 +57,7 @@ defmodule ChangelogrWeb.ChangelogLive.Index do
     |> Enum.map(fn x ->
       Ecto.build_assoc(changelog, :commits, %{
         commit: x.commit,
+        title: x.title,
         # |> Enum.intersperse("\n\n") |> List.to_string()
         body: x.body
       })

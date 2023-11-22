@@ -1,10 +1,10 @@
 <.header>
-  Listing Commits
+<!--   Listing Commits
   <:actions>
     <.link patch={~p"/commits/new"}>
       <.button>New Commit</.button>
     </.link>
-  </:actions>
+  </:actions> -->
 </.header>
 
 <.table
@@ -13,22 +13,22 @@
   row_click={fn {_id, commit} -> JS.navigate(~p"/commits/#{commit}") end}
 >
   <:col :let={{_id, commit}} label="Kernel"><%= commit.changelog.kernel_version %></:col>
-  <:col :let={{_id, commit}} label="Commit"><%= commit.commit %></:col>
-  <:col :let={{_id, commit}} label="Body"><%= commit.body %></:col>
+  <:col :let={{_id, commit}} label="Commit"><span class="font-mono"><%= commit.commit %></span></:col>
+  <:col :let={{_id, commit}} label="Title"><%= commit.title %></:col>
   <:action :let={{_id, commit}}>
     <div class="sr-only">
       <.link navigate={~p"/commits/#{commit}"}>Show</.link>
     </div>
-    <.link patch={~p"/commits/#{commit}/edit"}>Edit</.link>
+    <!-- <.link patch={~p"/commits/#{commit}/edit"}>Edit</.link> -->
   </:action>
-  <:action :let={{id, commit}}>
+<!--   <:action :let={{id, commit}}>
     <.link
       phx-click={JS.push("delete", value: %{id: commit.id}) |> hide("##{id}")}
       data-confirm="Are you sure?"
     >
       Delete
     </.link>
-  </:action>
+  </:action> -->
 </.table>
 
 <.modal

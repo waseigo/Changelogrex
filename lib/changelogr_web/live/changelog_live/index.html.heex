@@ -24,7 +24,7 @@
     <div class="sr-only">
       <.link navigate={~p"/changelogs/#{changelog}"}><%= gettext("Show") %></.link>
     </div>
-    <.link patch={~p"/changelogs/#{changelog}/edit"}><%= gettext("Edit") %></.link>
+    <!-- <.link patch={~p"/changelogs/#{changelog}/edit"}><%= gettext("Edit") %></.link> -->
   </:action>
   <:action :let={{id, changelog}}>
     <.link phx-click={JS.push("process", value: %{id: changelog.id})}>

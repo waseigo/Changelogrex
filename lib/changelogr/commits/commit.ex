@@ -8,6 +8,7 @@ defmodule Changelogr.Commits.Commit do
   @foreign_key_type :binary_id
   schema "commits" do
     field :body, :string
+    field :title, :string
     field :commit, :string
     belongs_to :changelog, Changelog
 
@@ -17,7 +18,7 @@ defmodule Changelogr.Commits.Commit do
   @doc false
   def changeset(commit, attrs) do
     commit
-    |> cast(attrs, [:commit, :body])
-    |> validate_required([:commit, :body])
+    |> cast(attrs, [:commit, :title, :body])
+    |> validate_required([:commit, :title, :body])
   end
 end

@@ -1,6 +1,7 @@
 defmodule Changelogr.Commit do
   defstruct [
     :kernel_version,
+    :title,
     :changelog_url,
     :fetched_timestamp,
     :changelog_timestamp,
@@ -204,7 +205,14 @@ defmodule Changelogr.Parser do
     {:ok, regex} = Regex.compile(@indentation)
 
     # new with regex and without splitting into paragraphs because it was breaking kernel dmesg etc.
-    b_new = Regex.replace(regex, body, "")
+    [ title, b_new ] =
+      Regex.replace(regex, body, "")
+      |> String.trim()
+      |> String.split("\n", parts: 2)
+      |> Enum.map(&String.trim/1)
+      |> Kernel.++([""])
+      |> Enum.slice(0..1)
+
     # body
     # |> String.replace(@indentation, "")
     # |> String.split("\n")
@@ -220,6 +228,7 @@ defmodule Changelogr.Parser do
     # |> Enum.map(&String.trim(&1))
 
     commit
+    |> Map.put(:title, title)
     |> Map.put(:body, b_new)
   end
 
@@ -273,4 +282,5 @@ defmodule Changelogr.Parser do
     "#{major}.#{minor}" <>
       if patch != nil, do: ".#{patch}", else: ""
   end
+
 end
