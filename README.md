@@ -4,7 +4,16 @@
 
 Fetches and parses Linux kernel ChangeLogs from [https://kernel.org/pub/linux/kernel/](https://kernel.org/pub/linux/kernel/) into Elixir structs that can later be handled with Ecto.
 
-## Batch fetch-and-process Linux kernel v6.x ChangeLogs into properly parsed commits
+## Front-end stuff
+
+[![demo](https://asciinema.org/a/113463.png)](https://files.waseigo.com/api/public/dl/IHwECYBc?inline=true)
+
+
+
+
+## Back-end stuff
+
+### Batch fetch-and-process Linux kernel v6.x ChangeLogs into properly parsed commits
 
 First, check which ChangeLogs are available.
 
