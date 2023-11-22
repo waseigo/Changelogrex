@@ -27,6 +27,7 @@ end
 defmodule Changelogr.Parser do
   alias Changelogr.ChangeLog
   alias Changelogr.Commit
+  alias Changelogr.Fetcher
   # @filename "priv/static/ChangeLog*"
 
   @all_fields %{

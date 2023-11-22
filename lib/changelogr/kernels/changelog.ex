@@ -2,6 +2,8 @@ defmodule Changelogr.Kernels.Changelog do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Changelogr.Commits.Commit
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "changelogs" do
@@ -9,6 +11,7 @@ defmodule Changelogr.Kernels.Changelog do
     field :kernel_version, :string
     field :timestamp, :utc_datetime
     field :url, :string
+    has_many :commits, Commit
 
     timestamps()
   end

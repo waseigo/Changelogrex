@@ -15,6 +15,9 @@
       <a href={~p"/fetchops"} class="hover:text-zinc-700">
         FetchOps
       </a>
+      <a href={~p"/commits"} class="hover:text-zinc-700">
+        Commits
+      </a>
       <a
         href="https://hexdocs.pm/phoenix/overview.html"
         class="rounded-lg bg-zinc-100 px-2 py-1 hover:bg-zinc-200/80"
@@ -25,7 +28,7 @@
   </div>
 </header>
 <main class="px-4 py-20 sm:px-6 lg:px-8">
-  <div class="mx-auto max-w-2xl">
+  <div class="mx-auto">
     <.flash_group flash={@flash} />
     <%= @inner_content %>
   </div>

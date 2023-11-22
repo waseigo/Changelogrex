@@ -36,7 +36,7 @@ defmodule Changelogr.Fetcher do
       {:error, _} ->
         r
 
-      {:ok, p} ->
+      {:ok, _} ->
         available =
           v
           |> kernel_version_to_subdir()

@@ -57,6 +57,7 @@ defmodule ChangelogrWeb.ChangelogLive.FormComponent do
 
     {:ok, cl} = Changelogr.Fetcher.fetch_changelog_for_version(v)
 
+    # FIXME
     IO.inspect(cl)
 
     changelog_params =

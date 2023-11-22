@@ -44,4 +44,24 @@ defmodule ChangelogrWeb.ChangelogLive.Index do
 
     {:noreply, stream_delete(socket, :changelogs, changelog)}
   end
+
+  def handle_event("process", %{"id" => id}, socket) do
+    changelog = Kernels.get_changelog!(id)
+
+    IO.inspect(changelog)
+
+    # {:ok, _} = Kernels.delete_changelog(changelog)
+    r = Changelogr.one(changelog.kernel_version)
+
+    r
+    |> Enum.map(fn x ->
+      Ecto.build_assoc(changelog, :commits, %{
+        commit: x.commit,
+        body: x.body |> Enum.intersperse("\n\n") |> List.to_string()
+      })
+      |> Changelogr.Repo.insert!()
+    end)
+
+    {:noreply, push_navigate(socket, to: ~p"/commits")}
+  end
 end

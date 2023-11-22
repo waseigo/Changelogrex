@@ -65,7 +65,7 @@ defmodule ChangelogrWeb.Router do
     pipe_through [:browser, :require_authenticated_user]
 
     # Changelogs
-    live "/changelogs/new", ChangelogLive.Index, :new
+
     live "/changelogs/:id/edit", ChangelogLive.Index, :edit
     live "/changelogs/:id/show/edit", ChangelogLive.Show, :edit
 
@@ -73,6 +73,11 @@ defmodule ChangelogrWeb.Router do
     live "/fetchops/new", FetchopLive.Index, :new
     live "/fetchops/:id/edit", FetchopLive.Index, :edit
     live "/fetchops/:id/show/edit", FetchopLive.Show, :edit
+
+    # Commits
+    live "/commits/new", CommitLive.Index, :new
+    live "/commits/:id/edit", CommitLive.Index, :edit
+    live "/commits/:id/show/edit", CommitLive.Show, :edit
 
     live_session :require_authenticated_user,
       on_mount: [{ChangelogrWeb.UserAuth, :ensure_authenticated}] do
@@ -85,12 +90,17 @@ defmodule ChangelogrWeb.Router do
     pipe_through [:browser]
 
     # Changelogs
+    live "/changelogs/new", ChangelogLive.Index, :new
     live "/changelogs", ChangelogLive.Index, :index
     live "/changelogs/:id", ChangelogLive.Show, :show
 
     # Fetchops
     live "/fetchops", FetchopLive.Index, :index
     live "/fetchops/:id", FetchopLive.Show, :show
+
+    # Commits
+    live "/commits", CommitLive.Index, :index
+    live "/commits/:id", CommitLive.Show, :show
 
     # Authentication
     delete "/users/log_out", UserSessionController, :delete

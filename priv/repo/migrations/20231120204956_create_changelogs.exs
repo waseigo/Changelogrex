@@ -11,5 +11,7 @@ defmodule Changelogr.Repo.Migrations.CreateChangelogs do
 
       timestamps()
     end
+
+    create unique_index(:changelogs, :kernel_version)
   end
 end
