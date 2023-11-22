@@ -6,9 +6,7 @@ Fetches and parses Linux kernel ChangeLogs from [https://kernel.org/pub/linux/ke
 
 ## Front-end stuff
 
-[![demo](https://asciinema.org/a/113463.png)](https://files.waseigo.com/api/public/dl/IHwECYBc?inline=true)
-
-
+https://github.com/waseigo/Changelogrex/assets/76704620/6b9b0d4e-722a-40e0-ac52-98489325f87e
 
 
 ## Back-end stuff
