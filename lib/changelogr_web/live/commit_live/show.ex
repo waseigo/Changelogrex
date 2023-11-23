@@ -14,7 +14,7 @@ defmodule ChangelogrWeb.CommitLive.Show do
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:commit, Commits.get_commit!(id)  |> Repo.preload(:changelog))}
+     |> assign(:commit, Commits.get_commit!(id) |> Repo.preload(:changelog))}
   end
 
   defp page_title(:show), do: "Show Commit"

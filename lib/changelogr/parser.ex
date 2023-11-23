@@ -205,7 +205,7 @@ defmodule Changelogr.Parser do
     {:ok, regex} = Regex.compile(@indentation)
 
     # new with regex and without splitting into paragraphs because it was breaking kernel dmesg etc.
-    [ title, b_new ] =
+    [title, b_new] =
       Regex.replace(regex, body, "")
       |> String.trim()
       |> String.split("\n", parts: 2)
@@ -282,5 +282,4 @@ defmodule Changelogr.Parser do
     "#{major}.#{minor}" <>
       if patch != nil, do: ".#{patch}", else: ""
   end
-
 end
