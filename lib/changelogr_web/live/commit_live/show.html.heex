@@ -1,11 +1,21 @@
 <.header>
   <%= @commit.title %>
   <:subtitle>
-    <span class="bg-blue-100 text-blue-800 text-sm font-medium me-2 px-1.5 py-0.5 rounded-full dark:bg-blue-900 dark:text-blue-300">
-      <%= @commit.changelog.kernel_version %>
+    <span class="flex items-center mt-3">
+      <a href={"https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-#{@commit.changelog.kernel_version}.tar.xz"}>
+        <span class="bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2 py-1 rounded-full dark:bg-blue-900 dark:text-blue-300 flex align-middle items-center">
+          <Icons.FontAwesome.Brands.linux class="w-5 h-5 p-0 me-1" /><%= @commit.changelog.kernel_version %>
+        </span>
+      </a>
+      <a href={"https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=#{@commit.commit}"}>
+        <span class="bg-gray-200 text-gray-800 text-xs font-medium me-2 px-2 py-1 rounded-full dark:bg-blue-900 dark:text-blue-300 flex align-middle items-center">
+          <Icons.FontAwesome.Solid.code_commit class="w-5 h-5 me-1" />
+          <tt>
+            <%= @commit.commit %>
+          </tt>
+        </span>
+      </a>
     </span>
-    <span class="text-black pe-2"></span>
-    <%= @commit.commit %>
   </:subtitle>
   <!--   <:actions>
     <.link patch={~p"/commits/#{@commit}/show/edit"} phx-click={JS.push_focus()}>
@@ -14,12 +24,12 @@
   </:actions> -->
 </.header>
 <!-- <.list>
-  <:item title="Commit"><%= @commit.commit %></:item> 
+  <:item title="Commit"><%= @commit.commit %></:item>
   <:item title="Body">
     <pre><%= @commit.body %></pre>
   </:item>
 </.list> -->
-<pre class="text-xs mt-4 leading-2"><%= @commit.body %></pre>
+<pre class="text-xs mt-4 leading-2 whitespace-pre-wrap"><%= @commit.body %></pre>
 
 <.back navigate={~p"/commits"}>Back to commits</.back>
 

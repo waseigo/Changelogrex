@@ -116,7 +116,6 @@ defmodule ChangelogrWeb.ChangelogLive.Index do
     |> start_async(:running_task, fn ->
       # the code to run async)
 
-
       Enum.each(r, fn x ->
         Ecto.build_assoc(changelog, :commits, %{
           commit: x.commit,
@@ -124,9 +123,9 @@ defmodule ChangelogrWeb.ChangelogLive.Index do
           body: x.body
         })
         |> Changelogr.Repo.insert!()
-        #IO.puts("ASYNC PROCESSING COMMIT #{x.commit}")
-        send(live_view_pid, {:task_message, "PERSISTED #{x.commit}"})
 
+        # IO.puts("ASYNC PROCESSING COMMIT #{x.commit}")
+        send(live_view_pid, {:task_message, "PERSISTED #{x.commit}"})
       end)
 
       # return a small, controlled value
