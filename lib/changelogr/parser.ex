@@ -2,6 +2,7 @@ defmodule Changelogr.Commit do
   defstruct [
     :kernel_version,
     :title,
+    :topics,
     :changelog_url,
     :fetched_timestamp,
     :changelog_timestamp,
@@ -228,8 +229,40 @@ defmodule Changelogr.Parser do
     # |> Enum.map(&String.trim(&1))
 
     commit
-    |> Map.put(:title, title)
     |> Map.put(:body, b_new)
+    |> Map.merge(extract_topics(title))
+  end
+
+  def extract_topics(title) when is_bitstring(title) do
+    regex = ~r/([[:graph:]]*)\:[[:space:]]/
+    topics = Regex.scan(regex, title)
+    keys = [:primary, :secondary, :tertiary]
+
+    case topics do
+      [] ->
+        %{
+          :title => title,
+          :topics =>
+            [keys, [nil, nil, nil]]
+            |> List.zip()
+            |> Map.new()
+        }
+
+      _ ->
+        title =
+          Regex.split(regex, title)
+          |> List.last()
+
+        topics =
+          topics
+          |> Enum.map(fn x -> List.last(x) end)
+          |> Stream.concat(Stream.repeatedly(fn -> nil end))
+          |> Enum.take(length(keys))
+          |> (&List.zip([keys, &1])).()
+          |> Map.new()
+
+        %{title: title, topics: topics}
+    end
   end
 
   def process_empty_list(list) do
