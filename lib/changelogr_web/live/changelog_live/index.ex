@@ -3,6 +3,7 @@ defmodule ChangelogrWeb.ChangelogLive.Index do
 
   alias Phoenix.LiveView.AsyncResult
 
+  alias Changelogr.Repo
   alias Changelogr.Kernels
   alias Changelogr.Kernels.Changelog
 
@@ -49,7 +50,7 @@ defmodule ChangelogrWeb.ChangelogLive.Index do
       socket
       |> assign(:messages, [message | socket.assigns.messages])
 
-    IO.inspect(socket.assigns)
+    # IO.inspect(socket.assigns)
 
     {:noreply, socket}
   end
@@ -62,10 +63,31 @@ defmodule ChangelogrWeb.ChangelogLive.Index do
     {:noreply, stream_delete(socket, :changelogs, changelog)}
   end
 
+  @impl true
+  def handle_event("wipe", %{"id" => id}, socket) do
+    changelog = Kernels.get_changelog!(id)
+
+    commits =
+      changelog
+      |> Repo.preload(:commits)
+      |> Map.get(:commits)
+
+    commits
+    |> Enum.map(&Repo.delete(&1))
+
+    result =
+      changelog
+      |> Ecto.Changeset.change(%{processed: false})
+      |> Repo.update!()
+
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_event("process", %{"id" => id}, socket) do
     changelog = Kernels.get_changelog!(id)
 
-    IO.inspect(changelog)
+    #    IO.inspect(changelog)
 
     # {:ok, _} = Kernels.delete_changelog(changelog)
     r = Changelogr.one(changelog.kernel_version)
@@ -78,7 +100,7 @@ defmodule ChangelogrWeb.ChangelogLive.Index do
         # |> Enum.intersperse("\n\n") |> List.to_string()
         body: x.body
       })
-      |> Changelogr.Repo.insert!()
+      |> Repo.insert!()
     end)
 
     {:noreply, push_navigate(socket, to: ~p"/commits")}
@@ -123,15 +145,17 @@ defmodule ChangelogrWeb.ChangelogLive.Index do
             title: x.title,
             body: x.body
           })
-          |> Changelogr.Repo.insert()
+          |> Repo.insert()
 
         # IO.puts("ASYNC PROCESSING COMMIT #{x.commit}")
         case result do
           {:ok, _} ->
-            IO.inspect(socket)
+            :nop
+
+          # IO.inspect(socket)
 
           {_, _} ->
-            IO.inspect(result)
+            # IO.inspect(result)
             send(live_view_pid, {:task_message, "ERROR WITH #{x.commit}"})
         end
       end)
@@ -150,7 +174,7 @@ defmodule ChangelogrWeb.ChangelogLive.Index do
     cl =
       socket.assigns.changelog
       |> Ecto.Changeset.change(%{processed: true})
-      |> Changelogr.Repo.update!()
+      |> Repo.update!()
 
     socket =
       socket

@@ -12,65 +12,18 @@
   </:actions>
 </.header>
 
-<div class="flex flex-wrap gap-4 mt-10" id="changelogss"
-phx-update={match?(%Phoenix.LiveView.LiveStream{}, @streams.changelogs) && "stream"}>
+<div
+  class="flex flex-col gap-4 mt-8 gap-2"
+  id="changelogs-in-rows"
+  phx-update={match?(%Phoenix.LiveView.LiveStream{}, @streams.changelogs) && "stream"}
+>
   <%= for {id, changelog} <- @streams.changelogs do %>
     <.live_component module={ChangelogrWeb.ChangelogLive.Row} id={id} changelog={changelog} />
   <% end %>
 </div>
 
-<.table
-  id="changelogs"
-  rows={@streams.changelogs}
-  row_click={fn {_id, changelog} -> JS.navigate(~p"/changelogs/#{changelog}") end}
->
-  <:col :let={{_id, changelog}} label={gettext("Kernel")}>
-    <%= changelog.kernel_version %>
-  </:col>
-  <:col :let={{_id, changelog}} label="URL">
-    <.link navigate={changelog.url}>
-      <%= changelog.url
-      |> String.reverse()
-      |> String.graphemes()
-      |> Enum.slice(0..5)
-      |> List.to_string()
-      |> String.reverse() %> -- <%= changelog.processed %>
-    </.link>
-  </:col>
-  <:col :let={{_id, changelog}} label={gettext("Date")}><%= changelog.date %></:col>
-  <:col :let={{_id, changelog}} label={gettext("Fetched")}><%= changelog.timestamp %></:col>
-  <:action :let={{_id, changelog}}>
-    <div class="sr-only">
-      <.link navigate={~p"/changelogs/#{changelog}"}><%= gettext("Show") %></.link>
-    </div>
-    <!-- <.link patch={~p"/changelogs/#{changelog}/edit"}><%= gettext("Edit") %></.link> -->
-  </:action>
-  <:action :let={{id, changelog}}>
-    <%= if not changelog.processed do %>
-      <.button
-        :if={!@async_result.loading}
-        phx-click={JS.push("start_processing", value: %{id: changelog.id})}
-      >
-        <Icons.FontAwesome.Solid.gears class="w-6 h-6" fill="white" />
-        <span class="sr-only">Process</span>
-      </.button>
-    <% end %>
-    <.button :if={@async_result.loading} phx-click={JS.push("cancel", value: %{id: changelog.id})}>
-      Cancel
-    </.button>
-
-    <.button
-      phx-click={JS.push("delete", value: %{id: changelog.id}) |> hide("##{id}")}
-      data-confirm={gettext("Are you sure?")}
-    >
-      <Icons.FontAwesome.Regular.trash_can class="w-6 h-6" fill="white" />
-      <span class="sr-only">Delete</span>
-    </.button>
-  </:action>
-</.table>
-
 <.modal
-  :if={@live_action in [:new, :edit]}
+  :if={@live_action in [:new]}
   id="changelog-modal"
   show
   on_cancel={JS.patch(~p"/changelogs")}

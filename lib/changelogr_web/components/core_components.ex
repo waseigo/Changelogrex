@@ -215,8 +215,10 @@ defmodule ChangelogrWeb.CoreComponents do
       <.button>Send!</.button>
       <.button phx-click="go" class="ml-2">Send!</.button>
   """
-  attr :type, :string, default: nil
+  attr :type, :string, default: "button"
+  attr :id, :string, default: nil
   attr :class, :string, default: nil
+  attr :tooltip, :string, default: nil
   attr :rest, :global, include: ~w(disabled form name value)
 
   slot :inner_block, required: true
@@ -231,45 +233,25 @@ defmodule ChangelogrWeb.CoreComponents do
         @class
       ]}
       {@rest}
+      data-tooltip-target={@id}
     >
-      <%= render_slot(@inner_block) %>
+      <div class="flex gap-x-1 align-middle items-center">
+        <%= render_slot(@inner_block) %>
+      </div>
     </button>
+
+    <%= if @tooltip != nil and @id != nil do %>
+      <div
+        id={@id}
+        role="tooltip"
+        class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+      >
+        <%= @tooltip %>
+        <div class="tooltip-arrow" data-popper-arrow></div>
+      </div>
+    <% end %>
     """
   end
-
-
-
-  @doc """
-  Renders a button.
-
-  ## Examples
-
-      <.button>Send!</.button>
-      <.button phx-click="go" class="ml-2">Send!</.button>
-  """
-  attr :type, :string, default: nil
-  attr :class, :string, default: nil
-  attr :rest, :global, include: ~w(disabled form name value)
-
-  slot :inner_block, required: true
-
-  def button2(assigns) do
-    ~H"""
-    <button
-      type={@type}
-      class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3",
-        "text-sm font-semibold leading-6 text-white active:text-white/80",
-        @class
-      ]}
-      {@rest}
-    >
-      <%= render_slot(@inner_block) %>
-    </button>
-    """
-  end
-
-
 
   @doc """
   Renders an input with label and error messages.
