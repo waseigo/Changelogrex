@@ -55,20 +55,31 @@ defmodule ChangelogrWeb.ChangelogLive.FormComponent do
     IO.inspect(changelog_params)
     v = Map.get(changelog_params, "kernel_version")
 
-    {:ok, cl} = Changelogr.Fetcher.fetch_changelog_for_version(v)
+    result = Changelogr.Fetcher.fetch_changelog_for_version(v)
 
-    # FIXME
-    IO.inspect(cl)
+    case result do
+      {:error, _} ->
+        socket =
+          socket
+          |> put_flash(:info, "No Changelog found for v#{v}")
 
-    changelog_params =
-      changelog_params
-      |> Map.put("url", cl.url)
-      |> Map.put("date", cl.date)
-      |> Map.put("timestamp", cl.timestamp)
+        {:noreply, socket}
 
-    IO.inspect(changelog_params)
+      {:ok, cl} ->
+        # FIXME
+        IO.inspect(cl)
 
-    save_changelog(socket, socket.assigns.action, changelog_params)
+        changelog_params =
+          changelog_params
+          |> Map.put("url", cl.url)
+          |> Map.put("date", cl.date)
+          |> Map.put("timestamp", cl.timestamp)
+          |> Map.put("processed", false)
+
+        IO.inspect(changelog_params)
+
+        save_changelog(socket, socket.assigns.action, changelog_params)
+    end
   end
 
   defp save_changelog(socket, :edit, changelog_params) do

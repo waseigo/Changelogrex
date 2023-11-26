@@ -8,6 +8,7 @@ defmodule Changelogr.Repo.Migrations.CreateChangelogs do
       add :url, :string
       add :date, :naive_datetime
       add :timestamp, :utc_datetime
+      add :processed, :boolean
 
       timestamps()
     end

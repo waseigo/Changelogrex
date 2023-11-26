@@ -1,15 +1,15 @@
 <.header>
   Changelog <%= @changelog.id %>
   <:subtitle>This is a changelog record from your database.</:subtitle>
-  <:actions>
+  <!--  <:actions>
     <.link patch={~p"/changelogs/#{@changelog}/show/edit"} phx-click={JS.push_focus()}>
       <.button>Edit changelog</.button>
     </.link>
-  </:actions>
+  </:actions> -->
 </.header>
 
 <.list>
-  <:item title="Kernel version"><%= @changelog.kernel_version %></:item>
+  <:item title="Version"><%= @changelog.kernel_version %></:item>
   <:item title="Url"><%= @changelog.url %></:item>
   <:item title="Date"><%= @changelog.date %></:item>
   <:item title="Timestamp"><%= @changelog.timestamp %></:item>

@@ -96,7 +96,7 @@ defmodule ChangelogrWeb.ChangelogLive.Index do
     {:noreply, socket}
   end
 
-  def handle_event("cancel", _params, socket) do
+  def handle_event("cancel", %{"id" => id}, socket) do
     socket =
       socket
       |> cancel_async(:running_task)
@@ -117,15 +117,23 @@ defmodule ChangelogrWeb.ChangelogLive.Index do
       # the code to run async)
 
       Enum.each(r, fn x ->
-        Ecto.build_assoc(changelog, :commits, %{
-          commit: x.commit,
-          title: x.title,
-          body: x.body
-        })
-        |> Changelogr.Repo.insert!()
+        result =
+          Ecto.build_assoc(changelog, :commits, %{
+            commit: x.commit,
+            title: x.title,
+            body: x.body
+          })
+          |> Changelogr.Repo.insert()
 
         # IO.puts("ASYNC PROCESSING COMMIT #{x.commit}")
-        send(live_view_pid, {:task_message, "PERSISTED #{x.commit}"})
+        case result do
+          {:ok, _} ->
+            IO.inspect(socket)
+
+          {_, _} ->
+            IO.inspect(result)
+            send(live_view_pid, {:task_message, "ERROR WITH #{x.commit}"})
+        end
       end)
 
       # return a small, controlled value
@@ -138,6 +146,15 @@ defmodule ChangelogrWeb.ChangelogLive.Index do
       socket
       |> put_flash(:info, "Completed!")
       |> assign(:async_result, AsyncResult.ok(%AsyncResult{}, :ok))
+
+    cl =
+      socket.assigns.changelog
+      |> Ecto.Changeset.change(%{processed: true})
+      |> Changelogr.Repo.update!()
+
+    socket =
+      socket
+      |> assign(:changelog, cl)
 
     {:noreply, socket}
   end

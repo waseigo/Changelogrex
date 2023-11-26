@@ -11,6 +11,7 @@ defmodule Changelogr.Kernels.Changelog do
     field :kernel_version, :string
     field :timestamp, :utc_datetime
     field :url, :string
+    field :processed, :boolean, default: false
     has_many :commits, Commit
 
     timestamps()
