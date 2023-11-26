@@ -55,55 +55,17 @@ defmodule ChangelogrWeb.ChangelogLive.Index do
     {:noreply, socket}
   end
 
+  def handle_info({:wiped_changelog, changelog}, socket) do
+    socket = assign(socket, :changelog, changelog)
+    {:noreply, socket}
+  end
+
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
     changelog = Kernels.get_changelog!(id)
     {:ok, _} = Kernels.delete_changelog(changelog)
 
     {:noreply, stream_delete(socket, :changelogs, changelog)}
-  end
-
-  @impl true
-  def handle_event("wipe", %{"id" => id}, socket) do
-    changelog = Kernels.get_changelog!(id)
-
-    commits =
-      changelog
-      |> Repo.preload(:commits)
-      |> Map.get(:commits)
-
-    commits
-    |> Enum.map(&Repo.delete(&1))
-
-    result =
-      changelog
-      |> Ecto.Changeset.change(%{processed: false})
-      |> Repo.update!()
-
-    {:noreply, socket}
-  end
-
-  @impl true
-  def handle_event("process", %{"id" => id}, socket) do
-    changelog = Kernels.get_changelog!(id)
-
-    #    IO.inspect(changelog)
-
-    # {:ok, _} = Kernels.delete_changelog(changelog)
-    r = Changelogr.one(changelog.kernel_version)
-
-    r
-    |> Enum.each(fn x ->
-      Ecto.build_assoc(changelog, :commits, %{
-        commit: x.commit,
-        title: x.title,
-        # |> Enum.intersperse("\n\n") |> List.to_string()
-        body: x.body
-      })
-      |> Repo.insert!()
-    end)
-
-    {:noreply, push_navigate(socket, to: ~p"/commits")}
   end
 
   def handle_event("start_processing", %{"id" => id}, socket) do

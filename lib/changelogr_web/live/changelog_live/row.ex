@@ -5,9 +5,23 @@ defmodule ChangelogrWeb.ChangelogLive.Row do
   alias Changelogr.Repo
   alias Changelogr.Kernels
 
+  # @impl true
+  # def mount(socket) do
+  #   IO.inspect(self(), label: "MOUNT")
+  #   {:ok, socket}
+  # end
+
+  # @impl true
+  # def update(assigns, socket) do
+  #   IO.inspect(self(), label: "UPDATE")
+  #   socket = assign(socket, assigns)
+  #   {:ok, socket}
+  # end
+
   @impl true
   def render(assigns) do
     # IO.inspect(assigns)
+    IO.inspect(self(), label: "RENDER")
 
     ~H"""
     <div
@@ -31,7 +45,9 @@ defmodule ChangelogrWeb.ChangelogLive.Row do
         <%= if not @changelog.processed do %>
           <.button
             class="bg-green-500"
-            phx-click={JS.push("start_processing", value: %{id: @changelog.id})}
+            phx-click="process"
+            phx-target={@myself}
+            phx-value-id={@changelog.id}
             tooltip="Process"
             id={"#{@changelog.id}-process"}
           >
@@ -80,7 +96,6 @@ defmodule ChangelogrWeb.ChangelogLive.Row do
 
   @impl true
   def handle_event("wipe", %{"id" => id}, socket) do
-    IO.inspect(id)
     changelog = Kernels.get_changelog!(id)
 
     commits =
@@ -91,10 +106,44 @@ defmodule ChangelogrWeb.ChangelogLive.Row do
     commits
     |> Enum.map(&Repo.delete(&1))
 
-    changelog
-    |> Ecto.Changeset.change(%{processed: false})
-    |> Repo.update!()
+    changelog =
+      changelog
+      |> Ecto.Changeset.change(%{processed: false})
+      |> Repo.update!()
 
-    {:noreply, socket}
+    IO.inspect(changelog)
+
+    # send(self(), {:wiped_changelog, changelog})
+
+    {:noreply, assign(socket, changelog: changelog)}
+  end
+
+  @impl true
+  def handle_event("process", %{"id" => id}, socket) do
+    changelog = Kernels.get_changelog!(id)
+
+    #    IO.inspect(changelog)
+
+    # {:ok, _} = Kernels.delete_changelog(changelog)
+    r = Changelogr.one(changelog.kernel_version)
+
+    r
+    |> Enum.each(fn x ->
+      Ecto.build_assoc(changelog, :commits, %{
+        commit: x.commit,
+        title: x.title,
+        # |> Enum.intersperse("\n\n") |> List.to_string()
+        body: x.body
+      })
+      |> Repo.insert!()
+    end)
+
+    changelog =
+      changelog
+      |> Ecto.Changeset.change(%{processed: true})
+      |> Repo.update!()
+
+    # {:noreply, push_navigate(socket, to: ~p"/commits")}
+    {:noreply, assign(socket, changelog: changelog)}
   end
 end
