@@ -60,6 +60,18 @@ defmodule ChangelogrWeb.ChangelogLive.Index do
     {:noreply, socket}
   end
 
+
+  def handle_info({ref, result}, %{assigns: %{task_ref: ref}} = socket) do
+    Process.demonitor(ref, [:flush])
+    # %{predictions: [%{label: label}]} = result
+    {:noreply, assign(socket, running: false)}
+  end
+
+  def handle_info({:changelog_processed, changelog}, socket) do
+    {:noreply, socket}
+  end
+
+
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
     changelog = Kernels.get_changelog!(id)

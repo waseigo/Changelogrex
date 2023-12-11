@@ -5,11 +5,17 @@ defmodule ChangelogrWeb.ChangelogLive.Row do
   alias Changelogr.Repo
   alias Changelogr.Kernels
 
-  # @impl true
-  # def mount(socket) do
-  #   IO.inspect(self(), label: "MOUNT")
-  #   {:ok, socket}
-  # end
+  @impl true
+  def mount(socket) do
+    IO.inspect(self(), label: "MOUNT")
+
+    socket =
+      socket
+      |> assign(total: nil, processed: nil, running: false, task_ref: nil)
+
+    IO.inspect(socket)
+    {:ok, socket}
+  end
 
   # @impl true
   # def update(assigns, socket) do
@@ -51,8 +57,12 @@ defmodule ChangelogrWeb.ChangelogLive.Row do
             tooltip="Process"
             id={"#{@changelog.id}-process"}
           >
-            <Icons.FontAwesome.Solid.gears class="w-6 h-6" fill="white" />
-            <span class="sr-only">Process</span>
+            <%= if @running do %>
+              <.spinner />
+            <% else %>
+              <Icons.FontAwesome.Solid.gears class="w-6 h-6" fill="white" />
+              <span class="sr-only">Process</span>
+            <% end %>
           </.button>
         <% else %>
           <.button
@@ -120,11 +130,14 @@ defmodule ChangelogrWeb.ChangelogLive.Row do
 
   @impl true
   def handle_event("process", %{"id" => id}, socket) do
+    task = Task.async(fn -> process_changelog(id, socket) end)
+
+    {:noreply, assign(socket, running: true, task_ref: task.ref)}
+  end
+
+  def process_changelog(id, socket) do
     changelog = Kernels.get_changelog!(id)
 
-    #    IO.inspect(changelog)
-
-    # {:ok, _} = Kernels.delete_changelog(changelog)
     r = Changelogr.one(changelog.kernel_version)
 
     r
@@ -132,7 +145,6 @@ defmodule ChangelogrWeb.ChangelogLive.Row do
       Ecto.build_assoc(changelog, :commits, %{
         commit: x.commit,
         title: x.title,
-        # |> Enum.intersperse("\n\n") |> List.to_string()
         body: x.body
       })
       |> Repo.insert!()
@@ -143,7 +155,5 @@ defmodule ChangelogrWeb.ChangelogLive.Row do
       |> Ecto.Changeset.change(%{processed: true})
       |> Repo.update!()
 
-    # {:noreply, push_navigate(socket, to: ~p"/commits")}
-    {:noreply, assign(socket, changelog: changelog)}
   end
 end
