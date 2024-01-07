@@ -19,7 +19,7 @@ defmodule ChangelogrWeb.CommitLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:commit]} type="text" label="Commit" />
+        <.input field={@form[:id]} type="text" label="Commit" />
         <.input field={@form[:body]} type="text" label="Body" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Commit</.button>

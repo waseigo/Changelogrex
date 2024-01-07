@@ -6,7 +6,7 @@ defmodule Changelogr.Commits.Commit do
 
   @derive {
     Flop.Schema,
-    filterable: [:changelog_id], sortable: [:changelog_id]
+    filterable: [:changelog_id, :title, :body], sortable: [:changelog_id, :title]
   }
 
   @primary_key {:id, :string, autogenerate: false}

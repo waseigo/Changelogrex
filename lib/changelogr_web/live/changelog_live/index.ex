@@ -113,7 +113,8 @@ defmodule ChangelogrWeb.ChangelogLive.Index do
       Enum.each(r, fn x ->
         result =
           Ecto.build_assoc(changelog, :commits, %{
-            id: x.commit, # commit: x.commit OBSOLETE
+            # commit: x.commit OBSOLETE
+            id: x.commit,
             title: x.title,
             body: x.body
           })

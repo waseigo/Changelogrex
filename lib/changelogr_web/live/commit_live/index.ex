@@ -7,12 +7,41 @@ defmodule ChangelogrWeb.CommitLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :commits, Commits.list_commits() |> Repo.preload(:changelog))}
+    # params = %{page: 1, page_size: 5}
+    # {:ok, {commits, meta}} = Commits.list_commits(params)
+    # {:ok, stream(socket, :commits, commits |> Repo.preload(:changelog))}
+    {:ok, stream(socket, :commits, %{})}
   end
 
   @impl true
   def handle_params(params, _url, socket) do
-    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+    # {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+    IO.inspect(params)
+    # params =
+    #   case params do
+    #     %{} -> %{page: 1, page_size: 5}
+    #     _ -> params
+    #   end
+    # IO.inspect(params)
+
+    case Commits.list_commits(params) do
+      {:ok, {commits, meta}} ->
+        commits = commits |> Repo.preload(:changelog)
+
+        IO.inspect(meta)
+        # meta = %Flop.Meta{meta | opts: [page_links: :hide]} # doesn't work
+
+        {:noreply,
+         socket
+         |> assign(:meta, meta)
+         |> stream(:commits, commits, reset: true)}
+
+      {:error, _meta} ->
+        # This will reset invalid parameters. Alternatively, you can assign
+        # only the meta and render the errors, or you can ignore the error
+        # case entirely.
+        {:noreply, push_navigate(socket, to: ~p"/commits")}
+    end
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do

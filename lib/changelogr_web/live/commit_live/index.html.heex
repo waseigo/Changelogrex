@@ -1,12 +1,71 @@
-<.header>
+<.header class="mb-5">
   Listing Commits
-<!--  <:actions>
+  <span class="bg-blue-100 text-blue-800 me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
+    <%= @meta.total_count %>
+  </span>
+  <!--  <:actions>
     <.link patch={~p"/commits/new"}>
       <.button>New Commit</.button>
     </.link>
   </:actions> -->
 </.header>
 
+<Flop.Phoenix.pagination meta={@meta} path={~p"/commits"} opts={[
+    page_links: {:ellipsis, 3},
+    wrapper_attrs: [class: "inline-flex text-sm text-gray-500 bg-white border border-gray-300"], # The attributes for the <nav> element that wraps the pagination links
+    previous_link_attrs: [class: "flex items-center justify-center px-4 h-10 ms-0 leading-tight hover:bg-gray-100 hover:text-gray-700"],
+    #previous_link_content: [class: ""],
+    current_link_attrs: [class: "text-brand inline-flex items-center justify-center px-4 h-10 ms-0 leading-tight bg-gray-200 pointer-events-none"],
+    next_link_attrs: [class: "flex items-center justify-center px-4 h-10 ms-0 leading-tight hover:bg-gray-100 hover:text-gray-700"],
+    #next_link_content: [class: ""],
+    #ellipsis_attrs: [aria: [label: "Go to next page"], class: "pagination-next"],
+    #ellipsis_content: {:safe, "&hellip;"},
+    pagination_list_attrs: [class: "inline-flex items-center justify-center h-10 ms-0 leading-tight"],
+    pagination_link_attrs: [class: "px-4 flex items-center justify-center px-4 h-10 ms-0 leading-tight hover:bg-gray-100 hover:text-gray-700"]
+    ]} 
+    />
+
+
+<Flop.Phoenix.table
+  id="commits-flop-table"
+  items={@streams.commits}
+  meta={@meta}
+  path={~p"/commits"}
+  row_click={fn {_id, commit} -> JS.navigate(~p"/commits/#{commit}") end}
+  opts={[
+    container: true,
+    container_attrs: [class: "overflow-y-auto px-4 sm:overflow-visible sm:px-0"],
+    table_attrs: [class: "w-[40rem] mt-11 sm:w-full table-auto"],
+    thead_attrs: [class: "text-sm text-left leading-6 text-zinc-500"],
+    thead_th_attrs: [class: "p-0 pr-6 pb-4 font-normal"],
+    tbody_attrs: [class: "relative divide-y divide-zinc-100 border-t border-zinc-200 text-sm leading-6 text-zinc-700"],
+    tr_attrs: [class: "group hover:bg-zinc-50"],
+    td_attrs: [class: "relative p-0 hover:cursor-pointer whitespace-nowrap overflow-hidden overflow-ellipsis"],
+  ]}
+>
+  <:col :let={{_id, commit}} label="Kernel" field={:changelog_id}>
+    
+    <div class="block py-4 pe-6">
+            <span class="relative font-semibold text-zinc-900">
+              <%= commit.changelog.id %>
+            </span>
+    </div>
+
+  </:col>
+  <:col :let={{_id, commit}} label="Commit" field={:title}>
+  <p class="text-xs font-mono text-slate-400"><%= commit.id %></p>
+  <%= commit.title %>
+  
+  </:col>
+  <:action :let={{_id, commit}}>
+    <div class="sr-only">
+      <.link navigate={~p"/commits/#{commit}"}>Show</.link>
+      <!-- <.link patch={~p"/commits/#{commit}/edit"}>Edit</.link> -->
+    </div>
+  </:action>
+</Flop.Phoenix.table>
+
+<%!--
 <.table
   id="commits"
   rows={@streams.commits}
@@ -21,17 +80,19 @@
     <div class="sr-only">
       <.link navigate={~p"/commits/#{commit}"}>Show</.link>
     </div>
-    <!-- <.link patch={~p"/commits/#{commit}/edit"}>Edit</.link> -->
+    <.link patch={~p"/commits/#{commit}/edit"}>Edit</.link>
   </:action>
-  <!--   <:action :let={{id, commit}}>
+  <:action :let={{id, commit}}>
     <.link
       phx-click={JS.push("delete", value: %{id: commit.id}) |> hide("##{id}")}
       data-confirm="Are you sure?"
     >
       Delete
     </.link>
-  </:action> -->
+  </:action>
 </.table>
+
+
 
 <.modal
   :if={@live_action in [:new, :edit]}
@@ -48,3 +109,4 @@
     patch={~p"/commits"}
   />
 </.modal>
+--%>
