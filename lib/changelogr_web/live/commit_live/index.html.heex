@@ -10,21 +10,44 @@
   </:actions> -->
 </.header>
 
-<Flop.Phoenix.pagination meta={@meta} path={~p"/commits"} opts={[
-    page_links: {:ellipsis, 3},
-    wrapper_attrs: [class: "inline-flex text-sm text-gray-500 bg-white border border-gray-300"], # The attributes for the <nav> element that wraps the pagination links
-    previous_link_attrs: [class: "flex items-center justify-center px-4 h-10 ms-0 leading-tight hover:bg-gray-100 hover:text-gray-700"],
-    #previous_link_content: [class: ""],
-    current_link_attrs: [class: "text-brand inline-flex items-center justify-center px-4 h-10 ms-0 leading-tight bg-gray-200 pointer-events-none"],
-    next_link_attrs: [class: "flex items-center justify-center px-4 h-10 ms-0 leading-tight hover:bg-gray-100 hover:text-gray-700"],
-    #next_link_content: [class: ""],
-    #ellipsis_attrs: [aria: [label: "Go to next page"], class: "pagination-next"],
-    #ellipsis_content: {:safe, "&hellip;"},
-    pagination_list_attrs: [class: "inline-flex items-center justify-center h-10 ms-0 leading-tight"],
-    pagination_link_attrs: [class: "px-4 flex items-center justify-center px-4 h-10 ms-0 leading-tight hover:bg-gray-100 hover:text-gray-700"]
-    ]} 
-    />
-
+<Flop.Phoenix.pagination
+  meta={@meta}
+  path={~p"/commits"}
+  opts={
+    [
+      page_links: {:ellipsis, 3},
+      # The attributes for the <nav> element that wraps the pagination links
+      wrapper_attrs: [class: "inline-flex text-sm text-gray-500 bg-white border border-gray-300"],
+      previous_link_attrs: [
+        class:
+          "flex items-center justify-center px-4 h-10 ms-0 leading-tight hover:bg-gray-100 hover:text-gray-700"
+      ],
+      # previous_link_content: [class: ""],
+      current_link_attrs: [
+        class:
+          "text-brand inline-flex items-center justify-center px-4 h-10 ms-0 leading-tight bg-gray-200 pointer-events-none"
+      ],
+      next_link_attrs: [
+        class:
+          "flex items-center justify-center px-4 h-10 ms-0 leading-tight hover:bg-gray-100 hover:text-gray-700"
+      ],
+      # next_link_content: [class: ""],
+      ellipsis_attrs: [
+        aria: [label: "Go to next page"],
+        class:
+          "px-4 flex items-center justify-center px-2 h-10 ms-0 leading-tight pointer-events-none text-gray-400"
+      ],
+      ellipsis_content: {:safe, "&#x22ef;"},
+      pagination_list_attrs: [
+        class: "inline-flex items-center justify-center h-10 ms-0 leading-tight"
+      ],
+      pagination_link_attrs: [
+        class:
+          "px-4 flex items-center justify-center px-4 h-10 ms-0 leading-tight hover:bg-gray-100 hover:text-gray-700"
+      ]
+    ]
+  }
+/>
 
 <Flop.Phoenix.table
   id="commits-flop-table"
@@ -38,24 +61,27 @@
     table_attrs: [class: "w-[40rem] mt-11 sm:w-full table-auto"],
     thead_attrs: [class: "text-sm text-left leading-6 text-zinc-500"],
     thead_th_attrs: [class: "p-0 pr-6 pb-4 font-normal"],
-    tbody_attrs: [class: "relative divide-y divide-zinc-100 border-t border-zinc-200 text-sm leading-6 text-zinc-700"],
+    tbody_attrs: [
+      class:
+        "relative divide-y divide-zinc-100 border-t border-zinc-200 text-sm leading-6 text-zinc-700"
+    ],
     tr_attrs: [class: "group hover:bg-zinc-50"],
-    td_attrs: [class: "relative p-0 hover:cursor-pointer whitespace-nowrap overflow-hidden overflow-ellipsis"],
+    td_attrs: [
+      class:
+        "relative p-0 hover:cursor-pointer whitespace-nowrap overflow-hidden overflow-ellipsis"
+    ]
   ]}
 >
   <:col :let={{_id, commit}} label="Kernel" field={:changelog_id}>
-    
     <div class="block py-4 pe-6">
-            <span class="relative font-semibold text-zinc-900">
-              <%= commit.changelog.id %>
-            </span>
+      <span class="relative font-semibold text-zinc-900">
+        <%= commit.changelog.id %>
+      </span>
     </div>
-
   </:col>
   <:col :let={{_id, commit}} label="Commit" field={:title}>
-  <p class="text-xs font-mono text-slate-400"><%= commit.id %></p>
-  <%= commit.title %>
-  
+    <p class="text-xs font-mono text-slate-400"><%= commit.id %></p>
+    <%= commit.title %>
   </:col>
   <:action :let={{_id, commit}}>
     <div class="sr-only">
