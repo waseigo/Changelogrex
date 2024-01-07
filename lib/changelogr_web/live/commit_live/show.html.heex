@@ -2,16 +2,18 @@
   <%= @commit.title %>
   <:subtitle>
     <span class="flex items-center mt-3">
-      <a href={"https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-#{@commit.changelog.kernel_version}.tar.xz"}>
+      <a href={"https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-#{@commit.changelog.id}.tar.xz"}>
+        <!-- FIXME remove hardcoded part of the URL -->
         <span class="bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2 py-1 rounded-md dark:bg-blue-900 dark:text-blue-300 flex align-middle items-center">
-          <Icons.FontAwesome.Brands.linux class="w-5 h-5 p-0 me-1" /><%= @commit.changelog.kernel_version %>
+          <Icons.FontAwesome.Brands.linux class="w-5 h-5 p-0 me-1" /><%= @commit.changelog.id %>
         </span>
       </a>
-      <a href={"https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=#{@commit.commit}"}>
+      <a href={"https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=#{@commit.id}"}>
+        <!-- FIXME remove hardcoded part of the URL -->
         <span class="bg-gray-200 text-gray-800 text-sm   font-medium me-2 px-2 py-1 rounded-md dark:bg-blue-900 dark:text-blue-300 flex align-middle items-center">
           <Icons.FontAwesome.Solid.code_commit class="w-5 h-5 me-1" />
           <tt>
-            <%= @commit.commit %>
+            <%= @commit.id %>
           </tt>
         </span>
       </a>
@@ -24,7 +26,7 @@
   </:actions> -->
 </.header>
 <!-- <.list>
-  <:item title="Commit"><%= @commit.commit %></:item>
+  <:item title="Commit"><%= @commit.id %></:item>
   <:item title="Body">
     <pre><%= @commit.body %></pre>
   </:item>

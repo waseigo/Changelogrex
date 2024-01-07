@@ -3,8 +3,8 @@ defmodule Changelogr.Repo.Migrations.CreateChangelogs do
 
   def change do
     create table(:changelogs, primary_key: false) do
-      add :id, :binary_id, primary_key: true
-      add :kernel_version, :string
+      add :id, :string, primary_key: true
+      # add :kernel_version, :string
       add :url, :string
       add :date, :naive_datetime
       add :timestamp, :utc_datetime
@@ -13,6 +13,6 @@ defmodule Changelogr.Repo.Migrations.CreateChangelogs do
       timestamps()
     end
 
-    create unique_index(:changelogs, :kernel_version)
+    create unique_index(:changelogs, :id)
   end
 end

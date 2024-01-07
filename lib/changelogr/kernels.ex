@@ -22,6 +22,13 @@ defmodule Changelogr.Kernels do
   end
 
   @doc """
+  Returns the list of changelogs filtered with Flop using the provided params
+  """
+  def list_changelogs(params) do
+    Flop.validate_and_run(Changelog, params, for: Changelog)
+  end
+
+  @doc """
   Gets a single changelog.
 
   Raises `Ecto.NoResultsError` if the Changelog does not exist.

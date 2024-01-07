@@ -37,7 +37,7 @@ defmodule ChangelogrWeb.ChangelogLive.Row do
       <h2 class="font-mono"><%= @id %></h2>
       <a href={~p"/changelogs/#{@changelog}"}>
         <h3 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-          <%= @changelog.kernel_version %>
+          <%= @changelog.id %>
         </h3>
       </a>
       <p class="font-normal text-gray-700 dark:text-gray-400">
@@ -138,12 +138,13 @@ defmodule ChangelogrWeb.ChangelogLive.Row do
   def process_changelog(id, socket) do
     changelog = Kernels.get_changelog!(id)
 
-    r = Changelogr.one(changelog.kernel_version)
+    r = Changelogr.one(changelog.id)
 
     r
     |> Enum.each(fn x ->
       Ecto.build_assoc(changelog, :commits, %{
-        commit: x.commit,
+        # commit: x.commit,
+        id: x.commit,
         title: x.title,
         body: x.body
       })

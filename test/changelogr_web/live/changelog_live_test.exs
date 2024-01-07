@@ -5,18 +5,18 @@ defmodule ChangelogrWeb.ChangelogLiveTest do
   import Changelogr.KernelsFixtures
 
   @create_attrs %{
+    id: "6.5.8",
     date: "2023-11-19T20:49:00",
-    kernel_version: "some kernel_version",
     timestamp: "2023-11-19T20:49:00Z",
     url: "some url"
   }
   @update_attrs %{
+    id: "6.5.9",
     date: "2023-11-20T20:49:00",
-    kernel_version: "some updated kernel_version",
     timestamp: "2023-11-20T20:49:00Z",
     url: "some updated url"
   }
-  @invalid_attrs %{date: nil, kernel_version: nil, timestamp: nil, url: nil}
+  @invalid_attrs %{date: nil, id: nil, timestamp: nil, url: nil}
 
   defp create_changelog(_) do
     changelog = changelog_fixture()
@@ -30,7 +30,7 @@ defmodule ChangelogrWeb.ChangelogLiveTest do
       {:ok, _index_live, html} = live(conn, ~p"/changelogs")
 
       assert html =~ "Listing Changelogs"
-      assert html =~ changelog.kernel_version
+      assert html =~ changelog.id
     end
 
     test "saves new changelog", %{conn: conn} do
@@ -53,7 +53,7 @@ defmodule ChangelogrWeb.ChangelogLiveTest do
 
       html = render(index_live)
       assert html =~ "Changelog created successfully"
-      assert html =~ "some kernel_version"
+      assert html =~ "6.5.8"
     end
 
     test "updates changelog in listing", %{conn: conn, changelog: changelog} do
@@ -76,7 +76,7 @@ defmodule ChangelogrWeb.ChangelogLiveTest do
 
       html = render(index_live)
       assert html =~ "Changelog updated successfully"
-      assert html =~ "some updated kernel_version"
+      assert html =~ "6.5.9"
     end
 
     test "deletes changelog in listing", %{conn: conn, changelog: changelog} do
@@ -94,7 +94,7 @@ defmodule ChangelogrWeb.ChangelogLiveTest do
       {:ok, _show_live, html} = live(conn, ~p"/changelogs/#{changelog}")
 
       assert html =~ "Show Changelog"
-      assert html =~ changelog.kernel_version
+      assert html =~ changelog.id
     end
 
     test "updates changelog within modal", %{conn: conn, changelog: changelog} do
@@ -117,7 +117,7 @@ defmodule ChangelogrWeb.ChangelogLiveTest do
 
       html = render(show_live)
       assert html =~ "Changelog updated successfully"
-      assert html =~ "some updated kernel_version"
+      assert html =~ "6.5.9"
     end
   end
 end

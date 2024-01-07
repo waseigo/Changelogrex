@@ -103,7 +103,7 @@ defmodule ChangelogrWeb.ChangelogLive.Index do
   def start_test_task(socket, changelog) do
     live_view_pid = self()
 
-    r = Changelogr.one(changelog.kernel_version)
+    r = Changelogr.one(changelog.id)
 
     socket
     |> assign(:async_result, AsyncResult.loading())
@@ -113,7 +113,7 @@ defmodule ChangelogrWeb.ChangelogLive.Index do
       Enum.each(r, fn x ->
         result =
           Ecto.build_assoc(changelog, :commits, %{
-            commit: x.commit,
+            id: x.commit, # commit: x.commit OBSOLETE
             title: x.title,
             body: x.body
           })

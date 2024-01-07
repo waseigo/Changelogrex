@@ -6,16 +6,16 @@ defmodule Changelogr.Commits.Commit do
 
   @derive {
     Flop.Schema,
-    filterable: [:changelog_id],
-    sortable: [:changelog_id]
+    filterable: [:changelog_id], sortable: [:changelog_id]
   }
 
-  @primary_key {:id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
+  @primary_key {:id, :string, autogenerate: false}
+  @foreign_key_type :string
   schema "commits" do
+    # field :id, :string
     field :body, :string
     field :title, :string
-    field :commit, :string
+    # field :commit, :string
     belongs_to :changelog, Changelog
 
     timestamps()
@@ -24,7 +24,7 @@ defmodule Changelogr.Commits.Commit do
   @doc false
   def changeset(commit, attrs) do
     commit
-    |> cast(attrs, [:commit, :title, :body])
-    |> validate_required([:commit, :title, :body])
+    |> cast(attrs, [:id, :title, :body])
+    |> validate_required([:id, :title, :body])
   end
 end

@@ -11,10 +11,10 @@ defmodule Changelogr.KernelsFixtures do
     {:ok, changelog} =
       attrs
       |> Enum.into(%{
+        id: "6.5.9",
         date: ~N[2023-11-19 20:49:00],
-        kernel_version: "some kernel_version",
         timestamp: ~U[2023-11-19 20:49:00Z],
-        url: "some url"
+        url: "https://...."
       })
       |> Changelogr.Kernels.create_changelog()
 

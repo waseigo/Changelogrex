@@ -25,7 +25,7 @@ defmodule Changelogr.CommitsTest do
 
       assert {:ok, %Commit{} = commit} = Commits.create_commit(valid_attrs)
       assert commit.body == "some body"
-      assert commit.commit == "some commit"
+      assert commit.id == "some commit"
     end
 
     test "create_commit/1 with invalid data returns error changeset" do
@@ -38,7 +38,7 @@ defmodule Changelogr.CommitsTest do
 
       assert {:ok, %Commit{} = commit} = Commits.update_commit(commit, update_attrs)
       assert commit.body == "some updated body"
-      assert commit.commit == "some updated commit"
+      assert commit.id == "some updated commit"
     end
 
     test "update_commit/2 with invalid data returns error changeset" do

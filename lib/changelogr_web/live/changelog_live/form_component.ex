@@ -19,7 +19,7 @@ defmodule ChangelogrWeb.ChangelogLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:kernel_version]} type="text" label="Kernel version" />
+        <.input field={@form[:id]} type="text" label="Kernel version" />
         <:actions>
           <.button phx-disable-with="Saving..."><%= gettext("Save") %></.button>
         </:actions>
@@ -46,14 +46,14 @@ defmodule ChangelogrWeb.ChangelogLive.FormComponent do
       |> Map.put(:action, :validate)
 
     # FIXME
-    IO.inspect(Map.get(changelog_params, "kernel_version"))
+    IO.inspect(Map.get(changelog_params, "id"))
 
     {:noreply, assign_form(socket, changeset)}
   end
 
   def handle_event("save", %{"changelog" => changelog_params}, socket) do
     IO.inspect(changelog_params)
-    v = Map.get(changelog_params, "kernel_version")
+    v = Map.get(changelog_params, "id")
 
     result = Changelogr.Fetcher.fetch_changelog_for_version(v)
 

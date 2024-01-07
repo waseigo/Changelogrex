@@ -4,11 +4,17 @@ defmodule Changelogr.Kernels.Changelog do
 
   alias Changelogr.Commits.Commit
 
-  @primary_key {:id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
+  @derive {
+    Flop.Schema,
+    filterable: [:date, :processed], sortable: [:date, :processed]
+  }
+
+  @primary_key {:id, :string, autogenerate: false}
+  @foreign_key_type :string
   schema "changelogs" do
+    # field :id, :string
     field :date, :naive_datetime
-    field :kernel_version, :string
+    # field :kernel_version, :string
     field :timestamp, :utc_datetime
     field :url, :string
     field :processed, :boolean, default: false
@@ -20,10 +26,10 @@ defmodule Changelogr.Kernels.Changelog do
   @doc false
   def changeset(changelog, attrs) do
     changelog
-    |> cast(attrs, [:kernel_version, :url, :date, :timestamp])
-    # |> validate_required([:kernel_version, :url, :date, :timestamp])
-    |> validate_required([:kernel_version])
-    |> validate_format(:kernel_version, ~r/^(0|[1-9]\d*)\.(\d{1,2})(?:\.(\d{1,3}))?$/)
-    |> unique_constraint(:kernel_version)
+    |> cast(attrs, [:id, :url, :date, :timestamp])
+    # |> validate_required([:id, :url, :date, :timestamp])
+    |> validate_required([:id])
+    |> validate_format(:id, ~r/^(0|[1-9]\d*)\.(\d{1,2})(?:\.(\d{1,3}))?$/)
+    |> unique_constraint(:id)
   end
 end

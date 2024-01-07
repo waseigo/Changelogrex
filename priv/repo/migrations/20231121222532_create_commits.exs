@@ -3,8 +3,8 @@ defmodule Changelogr.Repo.Migrations.CreateCommits do
 
   def change do
     create table(:commits, primary_key: false) do
-      add :id, :binary_id, primary_key: true
-      add :commit, :string
+      add :id, :string, primary_key: true
+      #      add :commit, :string
       add :title, :string
       add :body, :text
       add :changelog_id, references(:changelogs, on_delete: :delete_all)
@@ -12,6 +12,6 @@ defmodule Changelogr.Repo.Migrations.CreateCommits do
       timestamps()
     end
 
-    create unique_index(:commits, :commit)
+    create unique_index(:commits, :id)
   end
 end

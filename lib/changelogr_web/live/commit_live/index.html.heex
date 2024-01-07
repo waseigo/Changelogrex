@@ -12,9 +12,9 @@
   rows={@streams.commits}
   row_click={fn {_id, commit} -> JS.navigate(~p"/commits/#{commit}") end}
 >
-  <:col :let={{_id, commit}} label="Kernel"><%= commit.changelog.kernel_version %></:col>
+  <:col :let={{_id, commit}} label="Kernel"><%= commit.changelog.id %></:col>
   <:col :let={{_id, commit}} label="Commit">
-    <span class="font-mono"><%= commit.commit %></span>
+    <span class="font-mono"><%= commit.id %></span>
   </:col>
   <:col :let={{_id, commit}} label="Title"><%= commit.title %></:col>
   <:action :let={{_id, commit}}>
