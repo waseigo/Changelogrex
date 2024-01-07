@@ -47,7 +47,7 @@ To be able to fetch their content, we convert `available` into a list of `%Chang
 { :ok, fetchable } = Changelogr.Fetcher.fetchop_to_changelogs(available)
 ```
 
-`fetchable` is a list of `%ChangeLog{}` tuples. The `:body` attribute of the struct is still `nil`.
+`fetchable` is a list of `%ChangeLog{}` structs. The `:body` attribute of the struct is still `nil`.
 
 ```elixir
 iex> IO.inspect fetchable

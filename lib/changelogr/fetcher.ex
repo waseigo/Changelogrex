@@ -125,6 +125,14 @@ defmodule Changelogr.Fetcher do
     |> extract_changelog_dates()
   end
 
+  def fetch_available_all() do
+    fetch_major_version_paths()
+    |> Enum.map(&fetch_available(&1))
+    |> Enum.filter(fn {status, _} -> status == :ok end)
+    |> Enum.map(fn {:ok, data} -> Map.keys(data.hrefs) end)
+    |> List.flatten()
+  end
+
   def fetch_major_version_paths() do
     url = baseurl()
 
