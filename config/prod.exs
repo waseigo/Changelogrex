@@ -12,7 +12,7 @@ config :changelogr, Changelogr.Repo,
 config :changelogr, ChangelogrWeb.Endpoint,
   cache_static_manifest: "priv/static/cache_manifest.json",
   http: [port: 4000],
-  url: [host: "localhost", port: 4000],
+  url: [host: "changelogrex.overbring.com", port: 4000],
   server: true
 
 # Configures Swoosh API Client

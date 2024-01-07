@@ -37,6 +37,7 @@ defmodule Changelogr.Parser do
   @all_fields %{
     commit: "Commit",
     author: "Author",
+    merge: "Merge",
     date: "Date",
     reported_by: "Reported-by",
     tested_by: "Tested-by",
