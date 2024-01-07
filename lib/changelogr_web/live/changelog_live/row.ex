@@ -154,6 +154,5 @@ defmodule ChangelogrWeb.ChangelogLive.Row do
       changelog
       |> Ecto.Changeset.change(%{processed: true})
       |> Repo.update!()
-
   end
 end
