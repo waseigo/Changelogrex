@@ -7,7 +7,7 @@ defmodule Changelogr.Repo.Migrations.CreateCommits do
       #      add :commit, :string
       add :title, :string
       add :body, :text
-      add :changelog_id, references(:changelogs, on_delete: :delete_all)
+      add :changelog_id, references(:changelogs, type: :string, on_delete: :delete_all)
 
       timestamps()
     end

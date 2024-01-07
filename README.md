@@ -8,7 +8,6 @@ Fetches and parses Linux kernel ChangeLogs from [https://kernel.org/pub/linux/ke
 
 https://github.com/waseigo/Changelogrex/assets/76704620/6b9b0d4e-722a-40e0-ac52-98489325f87e
 
-
 ## Back-end stuff
 
 ### Batch fetch-and-process Linux kernel v6.x ChangeLogs into properly parsed commits
@@ -19,7 +18,7 @@ First, check which ChangeLogs are available.
 { :ok, available } = Changelogr.Fetcher.fetch_available("v6.x")
 ```
 
-`available` is a %FetchOp{} (*Fetch* *Op*eration) struct that contains HREFs and dates of all ChangeLogs from the directory listing of [https://kernel.org/pub/linux/kernel/v6.x/](https://kernel.org/pub/linux/kernel/v6.x/).
+`available` is a %FetchOp{} (_Fetch_ *Op*eration) struct that contains HREFs and dates of all ChangeLogs from the directory listing of [https://kernel.org/pub/linux/kernel/v6.x/](https://kernel.org/pub/linux/kernel/v6.x/).
 
 ```elixir
 iex> IO.inspect available
@@ -48,7 +47,7 @@ To be able to fetch their content, we convert `available` into a list of `%Chang
 { :ok, fetchable } = Changelogr.Fetcher.fetchop_to_changelogs(available)
 ```
 
-`fetchable` is a list of `{ status, %ChangeLog{} }` tuples. The `:body` attribute of the struct is still `nil`.
+`fetchable` is a list of `%ChangeLog{}` tuples. The `:body` attribute of the struct is still `nil`.
 
 ```elixir
 iex> IO.inspect fetchable
@@ -76,12 +75,13 @@ iex> IO.inspect fetchable
 Next, we'll fetch them in sequence.
 
 ```elixir
-changelogs = Enum.map(fetchable, &Changelogr.Fetcher.fetch_changelog/1) 
+changelogs = Enum.map(fetchable, &Changelogr.Fetcher.fetch_changelog/1)
 ```
 
 If the fetch was successful, the `:body` of each `%ChangeLog{}` struct in the list now contains the ChangeLog text, but it is still unparsed (`:commit` is still `nil`).
 
 For example:
+
 ```elixir
 iex> hd changelogs
 {:ok,
@@ -96,6 +96,7 @@ iex> hd changelogs
 ```
 
 Next, we'll process each one of these `%ChangeLog{}` structs into `%Commit{}` structs.
+
 1. First, we filter the list to keep only those with status `:ok`.
 2. Then, we convert it into a list of `%ChangeLog{}` structs by discarding the status.
 3. Finally, we parse the `:body` of each `%ChangeLog{}` structs into a list of `%Commit{}` structs in parallel.
@@ -103,7 +104,7 @@ Next, we'll process each one of these `%ChangeLog{}` structs into `%Commit{}` st
 5. ...and we flatten the list.
 
 ```elixir
-commits = 
+commits =
   changelogs
   |> Enum.filter(fn {status, _} -> status == :ok end)
   |> Enum.map(fn {_, x} -> x end)
@@ -146,7 +147,7 @@ iex> hd commits
 To fill in the rest of the attributes and to process the existing fields, we need to extract and process them. Processing is done in parallel.
 
 ```elixir
-processed = 
+processed =
  commits
  |> Task.async_stream(&Changelogr.Parser.extract_all_fields/1)
  |> Enum.to_list()

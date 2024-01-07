@@ -28,6 +28,7 @@ defmodule Changelogr.Fetcher do
   alias Changelogr.ChangeLog
   @kernel_org_url "https://cdn.kernel.org/pub/linux/kernel/"
   @changelog_filename_prefix "ChangeLog-"
+  @major_version_regex ~r/^v\d{0,2}\.[\dx]$/
 
   def fetch_changelog_for_version(v) when is_bitstring(v) do
     r = Changelogr.Parser.validate_and_parse_kernel_version(v)
@@ -38,13 +39,17 @@ defmodule Changelogr.Fetcher do
 
       {:ok, _} ->
         available =
-          v
-          |> kernel_version_to_subdir()
-          |> fetch_available()
+          case kernel_version_to_subdir(v) do
+            {:ok, subdir} ->
+              fetch_available(subdir)
+
+            {:error, message} ->
+              {:error, message}
+          end
 
         case available do
-          {:error, _} ->
-            {:error, "Could not fetch list of ChangeLogs"}
+          {:error, message} ->
+            {:error, message}
 
           {:ok, a} ->
             case v in Map.keys(a.hrefs) do
@@ -120,7 +125,25 @@ defmodule Changelogr.Fetcher do
     |> extract_changelog_dates()
   end
 
-  def fetch_html(major) do
+  def fetch_major_version_paths() do
+    url = baseurl()
+
+    response = http_get(url)
+
+    case response do
+      {:error, message} ->
+        {:error, message}
+
+      {:ok, http_response} ->
+        http_response.body
+        |> Floki.parse_document!()
+        |> Floki.find("a")
+        |> Enum.map(fn {_, _, c} -> hd(c) |> String.trim_trailing("/") end)
+        |> Enum.filter(&String.match?(&1, @major_version_regex))
+    end
+  end
+
+  def fetch_html(major) when is_bitstring(major) do
     url = baseurl(major)
 
     timestamp = DateTime.now!("UTC")
@@ -232,25 +255,48 @@ defmodule Changelogr.Fetcher do
     {version, uri}
   end
 
-  def baseurl(major) do
+  def baseurl() do
+    @kernel_org_url
+  end
+
+  def baseurl(version_path) do
     @kernel_org_url
     |> URI.parse()
-    |> URI.merge(major <> "/")
+    |> URI.merge(version_path <> "/")
   end
 
   def kernel_version_to_subdir(v) when is_bitstring(v) do
-    major = Changelogr.Parser.parse_kernel_version!(v) |> Map.get(:major)
-    "v" <> Integer.to_string(major) <> ".x"
+    version = Changelogr.Parser.parse_kernel_version!(v)
+    paths = fetch_major_version_paths()
+
+    c1 = "v" <> Integer.to_string(version.major) <> "." <> Integer.to_string(version.minor)
+
+    if c1 in paths do
+      {:ok, c1}
+    else
+      c2 = "v" <> Integer.to_string(version.major) <> ".x"
+
+      if c2 in paths do
+        {:ok, c2}
+      else
+        {:error, "Kernel version #{v} doesn't match any path under /pub/linux/kernel/"}
+      end
+    end
   end
 
   def kernel_version_to_url(v) when is_bitstring(v) do
     cl_filename = @changelog_filename_prefix <> v
 
-    v
-    |> kernel_version_to_subdir()
-    |> baseurl()
-    |> URI.merge(cl_filename)
-    |> URI.to_string()
+    case kernel_version_to_subdir(v) do
+      {:ok, subdir} ->
+        subdir
+        |> baseurl()
+        |> URI.merge(cl_filename)
+        |> URI.to_string()
+
+      {:error, message} ->
+        {:error, message}
+    end
   end
 
   # parse timestamp in format "Sat, 18 Nov 2023 19:39:36 GMT"

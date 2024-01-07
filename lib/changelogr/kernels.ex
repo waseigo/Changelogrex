@@ -28,6 +28,25 @@ defmodule Changelogr.Kernels do
     Flop.validate_and_run(Changelog, params, for: Changelog)
   end
 
+  def list_changelogs_ids(param) when is_atom(param) do
+    # base query
+    query = from(c in Changelog, select: c.id)
+
+    case param do
+      :all ->
+        query
+
+      :processed ->
+        query
+        |> where([c], c.processed == true)
+
+      :unprocessed ->
+        query
+        |> where([c], c.processed == false)
+    end
+    |> Repo.all()
+  end
+
   @doc """
   Gets a single changelog.
 
