@@ -20,6 +20,8 @@ config :changelogr, ChangelogrWeb.Endpoint,
   pubsub_server: Changelogr.PubSub,
   live_view: [signing_salt: "HzkCL/9j"]
 
+config :flop, repo: Changelogr.Repo
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails

@@ -22,6 +22,13 @@ defmodule Changelogr.Commits do
   end
 
   @doc """
+  Returns the list of commits filtered with Flop using the provided params
+  """
+  def list_commits(params) do
+    Flop.validate_and_run(Commit, params, for: Commit)
+  end
+
+  @doc """
   Gets a single commit.
 
   Raises `Ecto.NoResultsError` if the Commit does not exist.

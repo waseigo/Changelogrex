@@ -4,6 +4,12 @@ defmodule Changelogr.Commits.Commit do
 
   alias Changelogr.Kernels.Changelog
 
+  @derive {
+    Flop.Schema,
+    filterable: [:changelog_id],
+    sortable: [:changelog_id]
+  }
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "commits" do
