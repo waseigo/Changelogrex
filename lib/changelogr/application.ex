@@ -17,6 +17,8 @@ defmodule Changelogr.Application do
       {Phoenix.PubSub, name: Changelogr.PubSub},
       # Start the Finch HTTP client for sending emails
       {Finch, name: Changelogr.Finch},
+      # Start the Finch HTTP client for Ollamex to make HTTP requests to ollama's REST API
+      {Finch, name: Req.Finch},
       # Start a worker by calling: Changelogr.Worker.start_link(arg)
       # {Changelogr.Worker, arg},
       # Start to serve requests, typically the last entry
