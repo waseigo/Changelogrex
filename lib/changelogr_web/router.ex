@@ -102,6 +102,15 @@ defmodule ChangelogrWeb.Router do
     live "/commits", CommitLive.Index, :index
     live "/commits/:id", CommitLive.Show, :show
 
+    # Instructions
+    live "/instructions", InstructionLive.Index, :index
+    live "/instructions/new", InstructionLive.Index, :new
+    live "/instructions/:id/edit", InstructionLive.Index, :edit
+
+    live "/instructions/:id", InstructionLive.Show, :show
+    live "/instructions/:id/show/edit", InstructionLive.Show, :edit
+
+
     # Authentication
     delete "/users/log_out", UserSessionController, :delete
 

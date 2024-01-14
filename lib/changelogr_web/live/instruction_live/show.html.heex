@@ -1,0 +1,28 @@
+<.header>
+  Instruction <%= @instruction.id %>
+  <:subtitle>This is a instruction record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/instructions/#{@instruction}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit instruction</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Prompt"><%= @instruction.prompt %></:item>
+  <:item title="Model"><%= @instruction.model %></:item>
+  <:item title="Json"><%= @instruction.json %></:item>
+</.list>
+
+<.back navigate={~p"/instructions"}>Back to instructions</.back>
+
+<.modal :if={@live_action == :edit} id="instruction-modal" show on_cancel={JS.patch(~p"/instructions/#{@instruction}")}>
+  <.live_component
+    module={ChangelogrWeb.InstructionLive.FormComponent}
+    id={@instruction.id}
+    title={@page_title}
+    action={@live_action}
+    instruction={@instruction}
+    patch={~p"/instructions/#{@instruction}"}
+  />
+</.modal>
