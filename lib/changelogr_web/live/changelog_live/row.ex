@@ -34,12 +34,13 @@ defmodule ChangelogrWeb.ChangelogLive.Row do
       class="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
       id={@id}
     >
-      <h2 class="font-mono"><%= @id %></h2>
+      <h2 class="hidden font-mono"><%= @id %></h2>
       <a href={~p"/changelogs/#{@changelog}"}>
         <h3 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
           <%= @changelog.id %>
         </h3>
       </a>
+
       <p class="font-normal text-gray-700 dark:text-gray-400">
         <%= Timex.from_now(@changelog.date) %>
       </p>

@@ -2,7 +2,7 @@
   List of Changelogs
   <:actions>
     <.link patch={~p"/changelogs/new"}>
-      <.button>
+      <.button class="bg-stone-600">
         <div class="flex gap-x-1 align-middle items-center">
           <Icons.FontAwesome.Solid.plus class="w-6 h-6" fill="white" />
           <%= gettext("Add new") %>
@@ -13,7 +13,7 @@
 </.header>
 
 <div
-  class="flex flex-col gap-4 mt-8 gap-2"
+  class="flex flex-col mt-8 gap-2"
   id="changelogs-in-rows"
   phx-update={match?(%Phoenix.LiveView.LiveStream{}, @streams.changelogs) && "stream"}
 >

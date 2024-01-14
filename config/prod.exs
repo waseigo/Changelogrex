@@ -10,10 +10,10 @@ config :changelogr, Changelogr.Repo,
 # which you should run after static files are built and
 # before starting your production server.
 config :changelogr, ChangelogrWeb.Endpoint,
-  cache_static_manifest: "priv/static/cache_manifest.json",
-  http: [port: 4000],
-  url: [host: "changelogrex.overbring.com", port: 4000],
-  server: true
+  cache_static_manifest: "priv/static/cache_manifest.json"
+#  http: [port: 4000],
+#  url: [host: "localhost", port: 4000],
+#  server: true
 
 # Configures Swoosh API Client
 config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: Changelogr.Finch
