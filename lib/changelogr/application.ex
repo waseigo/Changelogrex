@@ -12,14 +12,15 @@ defmodule Changelogr.Application do
       ChangelogrWeb.Telemetry,
       # Start the Ecto repository
       Changelogr.Repo,
+      {DNSCluster, query: Application.get_env(:changelogr, :dns_cluster_query) || :ignore},
       # Start the PubSub system
       {Phoenix.PubSub, name: Changelogr.PubSub},
-      # Start Finch
+      # Start the Finch HTTP client for sending emails
       {Finch, name: Changelogr.Finch},
-      # Start the Endpoint (http/https)
-      ChangelogrWeb.Endpoint
       # Start a worker by calling: Changelogr.Worker.start_link(arg)
-      # {Changelogr.Worker, arg}
+      # {Changelogr.Worker, arg},
+      # Start to serve requests, typically the last entry
+      ChangelogrWeb.Endpoint
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

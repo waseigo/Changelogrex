@@ -7,7 +7,7 @@ defmodule ChangelogrWeb.Endpoint do
   @session_options [
     store: :cookie,
     key: "_changelogr_key",
-    signing_salt: "LMBZrc69",
+    signing_salt: "H8Ql/Jbn",
     same_site: "Lax"
   ]
 

@@ -2,9 +2,9 @@ defmodule ChangelogrWeb.CoreComponents do
   @moduledoc """
   Provides core UI components.
 
-  At the first glance, this module may seem daunting, but its goal is
-  to provide some core building blocks in your application, such as modals,
-  tables, and forms. The components are mostly markup and well documented
+  At first glance, this module may seem daunting, but its goal is to provide
+  core building blocks for your application, such as modals, tables, and
+  forms. The components consist mostly of markup and are well-documented
   with doc strings and declarative assigns. You may customize and style
   them in any way you want, based on your application growth and needs.
 
@@ -97,7 +97,7 @@ defmodule ChangelogrWeb.CoreComponents do
       <.flash kind={:info} flash={@flash} />
       <.flash kind={:info} phx-mounted={show("#flash")}>Welcome Back!</.flash>
   """
-  attr :id, :string, default: "flash", doc: "the optional id of flash container"
+  attr :id, :string, doc: "the optional id of flash container"
   attr :flash, :map, default: %{}, doc: "the map of flash messages to display"
   attr :title, :string, default: nil
   attr :kind, :atom, values: [:info, :error], doc: "used for styling and flash lookup"
@@ -106,6 +106,8 @@ defmodule ChangelogrWeb.CoreComponents do
   slot :inner_block, doc: "the optional inner block that renders the flash message"
 
   def flash(assigns) do
+    assigns = assign_new(assigns, :id, fn -> "flash-#{assigns.kind}" end)
+
     ~H"""
     <div
       :if={msg = render_slot(@inner_block) || Phoenix.Flash.get(@flash, @kind)}
@@ -113,7 +115,7 @@ defmodule ChangelogrWeb.CoreComponents do
       phx-click={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
       role="alert"
       class={[
-        "fixed top-2 right-2 w-80 sm:w-96 z-50 rounded-lg p-3 ring-1",
+        "fixed top-2 right-2 mr-2 w-80 sm:w-96 z-50 rounded-lg p-3 ring-1",
         @kind == :info && "bg-emerald-50 text-emerald-800 ring-emerald-500 fill-cyan-900",
         @kind == :error && "bg-rose-50 text-rose-900 shadow-md ring-rose-500 fill-rose-900"
       ]}
@@ -140,9 +142,11 @@ defmodule ChangelogrWeb.CoreComponents do
       <.flash_group flash={@flash} />
   """
   attr :flash, :map, required: true, doc: "the map of flash messages"
+  attr :id, :string, default: "flash-group", doc: "the optional id of flash container"
 
   def flash_group(assigns) do
     ~H"""
+    <div id={@id}>
     <.flash kind={:info} title="Success!" flash={@flash} />
     <.flash kind={:error} title="Error!" flash={@flash} />
     <.flash
@@ -168,6 +172,7 @@ defmodule ChangelogrWeb.CoreComponents do
       Hang in there while we get back on track
       <.icon name="hero-arrow-path" class="ml-1 h-3 w-3 animate-spin" />
     </.flash>
+    </div>
     """
   end
 
@@ -215,10 +220,8 @@ defmodule ChangelogrWeb.CoreComponents do
       <.button>Send!</.button>
       <.button phx-click="go" class="ml-2">Send!</.button>
   """
-  attr :type, :string, default: "button"
-  attr :id, :string, default: nil
+  attr :type, :string, default: nil
   attr :class, :string, default: nil
-  attr :tooltip, :string, default: nil
   attr :rest, :global, include: ~w(disabled form name value)
 
   slot :inner_block, required: true
@@ -229,27 +232,13 @@ defmodule ChangelogrWeb.CoreComponents do
       type={@type}
       class={[
         "phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3",
-        "inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800",
+        "text-sm font-semibold leading-6 text-white active:text-white/80",
         @class
       ]}
       {@rest}
-      data-tooltip-target={@id}
     >
-      <div class="flex gap-x-1 align-middle items-center">
-        <%= render_slot(@inner_block) %>
-      </div>
+      <%= render_slot(@inner_block) %>
     </button>
-
-    <%= if @tooltip != nil and @id != nil do %>
-      <div
-        id={@id}
-        role="tooltip"
-        class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
-      >
-        <%= @tooltip %>
-        <div class="tooltip-arrow" data-popper-arrow></div>
-      </div>
-    <% end %>
     """
   end
 
@@ -312,9 +301,11 @@ defmodule ChangelogrWeb.CoreComponents do
     |> input()
   end
 
-  def input(%{type: "checkbox", value: value} = assigns) do
+  def input(%{type: "checkbox"} = assigns) do
     assigns =
-      assign_new(assigns, :checked, fn -> Phoenix.HTML.Form.normalize_value("checkbox", value) end)
+      assign_new(assigns, :checked, fn ->
+        Phoenix.HTML.Form.normalize_value("checkbox", assigns[:value])
+      end)
 
     ~H"""
     <div phx-feedback-for={@name}>
@@ -439,7 +430,7 @@ defmodule ChangelogrWeb.CoreComponents do
     ~H"""
     <header class={[@actions != [] && "flex items-center justify-between gap-6", @class]}>
       <div>
-        <h1 class="text-lg font-semibold leading-6 text-zinc-800">
+        <h1 class="text-lg font-semibold leading-8 text-zinc-800">
           <%= render_slot(@inner_block) %>
         </h1>
         <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-zinc-600">
@@ -487,8 +478,10 @@ defmodule ChangelogrWeb.CoreComponents do
       <table class="w-[40rem] mt-11 sm:w-full">
         <thead class="text-sm text-left leading-6 text-zinc-500">
           <tr>
-            <th :for={col <- @col} class="p-0 pr-6 pb-4 font-normal"><%= col[:label] %></th>
-            <th class="relative p-0 pb-4"><span class="sr-only"><%= gettext("Actions") %></span></th>
+            <th :for={col <- @col} class="p-0 pb-4 pr-6 font-normal"><%= col[:label] %></th>
+            <th :if={@action != []} class="relative p-0 pb-4">
+              <span class="sr-only"><%= gettext("Actions") %></span>
+            </th>
           </tr>
         </thead>
         <tbody

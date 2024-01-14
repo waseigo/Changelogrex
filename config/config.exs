@@ -8,17 +8,19 @@
 import Config
 
 config :changelogr,
-  ecto_repos: [Changelogr.Repo]
+  ecto_repos: [Changelogr.Repo],
+  generators: [timestamp_type: :utc_datetime]
 
 # Configures the endpoint
 config :changelogr, ChangelogrWeb.Endpoint,
   url: [host: "localhost"],
+  adapter: Phoenix.Endpoint.Cowboy2Adapter,
   render_errors: [
     formats: [html: ChangelogrWeb.ErrorHTML, json: ChangelogrWeb.ErrorJSON],
     layout: false
   ],
   pubsub_server: Changelogr.PubSub,
-  live_view: [signing_salt: "HzkCL/9j"]
+  live_view: [signing_salt: "9OYbK+n2"]
 
 config :flop, repo: Changelogr.Repo
 

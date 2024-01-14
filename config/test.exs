@@ -20,7 +20,7 @@ config :changelogr, Changelogr.Repo, database: "changelogr-test.db"
 # you can enable the server option below.
 config :changelogr, ChangelogrWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
-  secret_key_base: "wjQ9ratvuojQ7CN0cm3ljPw3ql5jVTXyBIcpNKb5OVamxRWJS6f2yBd6pDTqrxuD",
+  secret_key_base: "vl0l7zX2lh+why5EoTZLhix6JFHn0PpORf/BQwj0tL1EiX84c0DAqTLdod668aVP",
   server: false
 
 # In test we don't send emails.
