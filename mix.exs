@@ -33,6 +33,7 @@ defmodule Changelogr.MixProject do
   defp deps do
     [
       {:argon2_elixir, "~> 3.0"},
+      {:ollamex, "0.2.0"},
       {:phoenix, "~> 1.7.10"},
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.10"},
