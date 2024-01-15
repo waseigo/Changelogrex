@@ -20,6 +20,7 @@ defmodule ChangelogrWeb.InstructionLive.FormComponent do
         phx-submit="save"
       >
         <.input field={@form[:prompt]} type="text" label="Prompt" />
+        <.input field={@form[:friendly]} type="text" label="Friendly" />
         <.input field={@form[:model]} type="text" label="Model" />
         <.input field={@form[:json]} type="checkbox" label="Json" />
         <:actions>

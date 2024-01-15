@@ -2,6 +2,7 @@ defmodule ChangelogrWeb.CommitLive.Show do
   use ChangelogrWeb, :live_view
 
   alias Changelogr.Commits
+  alias Changelogr.Augmentations
   alias Changelogr.Repo
 
   @impl true
@@ -14,7 +15,9 @@ defmodule ChangelogrWeb.CommitLive.Show do
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:commit, Commits.get_commit!(id) |> Repo.preload(:changelog))}
+     |> assign(:commit, Commits.get_commit!(id) |> Repo.preload(:changelog))
+     |> assign(:augmentations, Augmentations.list_instructions() |> Repo.preload(:answers))
+     |> IO.inspect()}
   end
 
   defp page_title(:show), do: "Show Commit"

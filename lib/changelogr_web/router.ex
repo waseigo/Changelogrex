@@ -110,7 +110,6 @@ defmodule ChangelogrWeb.Router do
     live "/instructions/:id", InstructionLive.Show, :show
     live "/instructions/:id/show/edit", InstructionLive.Show, :edit
 
-
     # Authentication
     delete "/users/log_out", UserSessionController, :delete
 

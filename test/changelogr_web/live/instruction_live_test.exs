@@ -4,9 +4,19 @@ defmodule ChangelogrWeb.InstructionLiveTest do
   import Phoenix.LiveViewTest
   import Changelogr.AugmentationsFixtures
 
-  @create_attrs %{json: true, model: "some model", prompt: "some prompt"}
-  @update_attrs %{json: false, model: "some updated model", prompt: "some updated prompt"}
-  @invalid_attrs %{json: false, model: nil, prompt: nil}
+  @create_attrs %{
+    json: true,
+    model: "some model",
+    prompt: "some prompt",
+    friendly: "some friendly"
+  }
+  @update_attrs %{
+    json: false,
+    model: "some updated model",
+    prompt: "some updated prompt",
+    friendly: "some updated friendly"
+  }
+  @invalid_attrs %{json: false, model: nil, prompt: nil, friendly: nil}
 
   defp create_instruction(_) do
     instruction = instruction_fixture()
@@ -72,7 +82,10 @@ defmodule ChangelogrWeb.InstructionLiveTest do
     test "deletes instruction in listing", %{conn: conn, instruction: instruction} do
       {:ok, index_live, _html} = live(conn, ~p"/instructions")
 
-      assert index_live |> element("#instructions-#{instruction.id} a", "Delete") |> render_click()
+      assert index_live
+             |> element("#instructions-#{instruction.id} a", "Delete")
+             |> render_click()
+
       refute has_element?(index_live, "#instructions-#{instruction.id}")
     end
   end

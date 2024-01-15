@@ -13,6 +13,7 @@
   row_click={fn {_id, instruction} -> JS.navigate(~p"/instructions/#{instruction}") end}
 >
   <:col :let={{_id, instruction}} label="Prompt"><%= instruction.prompt %></:col>
+  <:col :let={{_id, instruction}} label="Friendly"><%= instruction.friendly %></:col>
   <:col :let={{_id, instruction}} label="Model"><%= instruction.model %></:col>
   <:col :let={{_id, instruction}} label="Json"><%= instruction.json %></:col>
   <:action :let={{_id, instruction}}>
@@ -31,7 +32,12 @@
   </:action>
 </.table>
 
-<.modal :if={@live_action in [:new, :edit]} id="instruction-modal" show on_cancel={JS.patch(~p"/instructions")}>
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="instruction-modal"
+  show
+  on_cancel={JS.patch(~p"/instructions")}
+>
   <.live_component
     module={ChangelogrWeb.InstructionLive.FormComponent}
     id={@instruction.id || :new}

@@ -19,4 +19,20 @@ defmodule Changelogr.AugmentationsFixtures do
 
     instruction
   end
+
+  @doc """
+  Generate a answer.
+  """
+  def answer_fixture(attrs \\ %{}) do
+    {:ok, answer} =
+      attrs
+      |> Enum.into(%{
+        model: "some model",
+        response: "some response",
+        status: "some status"
+      })
+      |> Changelogr.Augmentations.create_answer()
+
+    answer
+  end
 end

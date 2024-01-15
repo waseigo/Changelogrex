@@ -3,6 +3,7 @@ defmodule Changelogr.Commits.Commit do
   import Ecto.Changeset
 
   alias Changelogr.Kernels.Changelog
+  alias Changelogr.Augmentations.Answer
 
   @derive {
     Flop.Schema,
@@ -17,6 +18,7 @@ defmodule Changelogr.Commits.Commit do
     field :title, :string
     # field :commit, :string
     belongs_to :changelog, Changelog
+    has_many :answer, Answer
 
     timestamps()
   end
