@@ -26,7 +26,8 @@ end
 
 defmodule Changelogr.Fetcher do
   alias Changelogr.ChangeLog
-  @kernel_org_url "https://cdn.kernel.org/pub/linux/kernel/"
+  #@kernel_org_url "https://cdn.kernel.org/pub/linux/kernel/"
+  @kernel_org_url "http://localhost:8000/pub/linux/kernel/"
   @changelog_filename_prefix "ChangeLog-"
   @major_version_regex ~r/^v\d{0,2}\.[\dx]$/
 
