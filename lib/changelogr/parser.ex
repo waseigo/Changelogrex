@@ -2,6 +2,7 @@ defmodule Changelogr.Commit do
   defstruct [
     :kernel_version,
     :title,
+    :title_raw,
     :topics,
     :changelog_url,
     :fetched_timestamp,
@@ -242,6 +243,7 @@ defmodule Changelogr.Parser do
     case topics do
       [] ->
         %{
+          :title_raw => title,
           :title => title,
           :topics =>
             [keys, [nil, nil, nil]]
@@ -250,8 +252,10 @@ defmodule Changelogr.Parser do
         }
 
       _ ->
+        title_raw = title
+
         title =
-          Regex.split(regex, title)
+          Regex.split(regex, title_raw)
           |> List.last()
 
         topics =
@@ -261,8 +265,19 @@ defmodule Changelogr.Parser do
           |> Enum.take(length(keys))
           |> (&List.zip([keys, &1])).()
           |> Map.new()
+          |> Enum.map(
+            fn {k, v} ->
+              if is_nil(v) do
+                {k, v}
+              else
+                {k, String.replace(v, "\"", "")}
+              end
+            end
+          )
 
-        %{title: title, topics: topics}
+        topics =
+          topics
+        %{title_raw: title_raw, title: title, topics: topics}
     end
   end
 
