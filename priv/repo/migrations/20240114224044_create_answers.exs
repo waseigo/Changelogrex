@@ -7,13 +7,13 @@ defmodule Changelogr.Repo.Migrations.CreateAnswers do
       add :response, :text
       add :model, :string
       add :status, :string
-      #add :commit_id, references(:commits, on_delete: :nothing), type: :string
-      #add :instruction_id, references(:instructions, on_delete: :nothing), type: :binary_id
+      add :commit_id, references(:commits, on_delete: :nothing, type: :string)
+      add :instruction_id, references(:instructions, on_delete: :nothing, type: :binary_id)
 
       timestamps(type: :utc_datetime)
     end
 
-    #create index(:answers, [:commit_id])
-    #create index(:answers, [:instruction_id])
+    create index(:answers, [:commit_id])
+    create index(:answers, [:instruction_id])
   end
 end

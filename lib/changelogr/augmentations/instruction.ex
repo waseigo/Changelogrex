@@ -11,7 +11,7 @@ defmodule Changelogr.Augmentations.Instruction do
     field :model, :string
     field :prompt, :string
     field :friendly, :string
-    has_many :answers, Answer, foreign_key: :id, type: :binary_id
+    # has_many :answers, Answer #, foreign_key: :id, type: :binary_id
 
     timestamps(type: :utc_datetime)
   end
