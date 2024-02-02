@@ -10,6 +10,10 @@ defmodule ChangelogrWeb.CommitLive.Index do
     # params = %{page: 1, page_size: 5}
     # {:ok, {commits, meta}} = Commits.list_commits(params)
     # {:ok, stream(socket, :commits, commits |> Repo.preload(:changelog))}
+    socket =
+      socket
+      |> assign(page_title: "Commits")
+
     {:ok, stream(socket, :commits, %{})}
   end
 
@@ -58,7 +62,7 @@ defmodule ChangelogrWeb.CommitLive.Index do
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "Listing Commits")
+    |> assign(:page_title, "Commits")
     |> assign(:commit, nil)
   end
 

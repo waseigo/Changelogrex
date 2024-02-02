@@ -1,39 +1,5 @@
-<header class="px-4 sm:px-6 lg:px-8">
-  <div class="flex items-center justify-between border-b border-zinc-100 py-3 text-sm">
-    <div class="flex items-center gap-4">
-      <a href="/">
-        <h1 class="text-brand flex align-midle items-center text-sm font-semibold leading-6">
-          🐧🌾🗒️🫅 Changelogrex
-          <small class="bg-brand/5 text-[0.8125rem] ml-3 rounded-full px-2 font-medium leading-6">
-            v<%= Application.spec(:changelogr, :vsn) %>
-          </small>
-        </h1>
-      </a>
-    </div>
-  </div>
-  <div class="flex items-center justify-between border-b border-zinc-100 py-3 text-sm">
-    <div class="flex items-center gap-4 font-semibold leading-6 text-zinc-900">
-      <a href={~p"/changelogs"} class="hover:text-zinc-700">
-        Changelogs
-      </a>
-      <a href={~p"/fetchops"} class="hover:text-zinc-700 hidden">
-        FetchOps
-      </a>
-      <a href={~p"/commits"} class="hover:text-zinc-700">
-        Commits
-      </a>
-      <!-- <a
-        href="https://hexdocs.pm/phoenix/overview.html"
-        class="rounded-lg bg-zinc-100 px-2 py-1 hover:bg-zinc-200/80"
-      >
-        Get Started <span aria-hidden="true">&rarr;</span>
-      </a> -->
-    </div>
-  </div>
-</header>
-<main class="px-4 py-20 sm:px-6 lg:px-8">
-  <div class="mx-auto">
-    <.flash_group flash={@flash} />
-    <%= @inner_content %>
-  </div>
+<!-- <header class="px-4 sm:px-6 lg:px-8"></header> -->
+<main>
+  <.flash_group flash={@flash} />
+  <%= @inner_content %>
 </main>

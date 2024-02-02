@@ -34,12 +34,12 @@
 <pre class="text-xs mt-4 leading-2 whitespace-pre-wrap"><%= @commit.body %></pre>
 
 <div class="mt-5 p-0">
-<%= for aug <- @augmentations do %>
-  <div class="p-2 border rounded-md border-blue-300 mb-2">
-    <h3 class="font-semibold border-b-2 border-blue-950"><%= aug.friendly %></h3>
-    <p><%= aug.answers %></p>
-  </div>
-<% end %>
+  <%= for aug <- @augmentations do %>
+    <div class="p-2 border rounded-md border-blue-300 mb-2">
+      <h3 class="font-semibold border-b-2 border-blue-950"><%= aug.friendly %></h3>
+      <p><%= aug.answers %></p>
+    </div>
+  <% end %>
 </div>
 
 <.back navigate={~p"/commits"}>Back to commits</.back>

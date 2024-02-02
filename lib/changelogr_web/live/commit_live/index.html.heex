@@ -15,23 +15,31 @@
   path={~p"/commits"}
   opts={
     [
-      page_links: {:ellipsis, 3},
+      page_links: {:ellipsis, 1},
       # The attributes for the <nav> element that wraps the pagination links
-      wrapper_attrs: [class: "inline-flex text-sm text-gray-500 bg-white border border-gray-300"],
+      wrapper_attrs: [
+        class: "w-full inline-flex text-sm text-gray-500 bg-white border border-gray-300"
+      ],
       previous_link_attrs: [
         class:
-          "flex items-center justify-center px-4 h-10 ms-0 leading-tight hover:bg-gray-100 hover:text-gray-700"
+          "flex items-center justify-center px-2 h-10 ms-0 leading-tight hover:bg-gray-100 hover:text-gray-700"
       ],
-      # previous_link_content: [class: ""],
+      previous_link_content:
+        ~H(<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+  <path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z" />
+</svg>),
       current_link_attrs: [
         class:
-          "text-brand inline-flex items-center justify-center px-4 h-10 ms-0 leading-tight bg-gray-200 pointer-events-none"
+          "text-brand inline-flex items-center justify-center px-2 h-10 ms-0 leading-tight bg-gray-200 pointer-events-none"
       ],
       next_link_attrs: [
         class:
-          "flex items-center justify-center px-4 h-10 ms-0 leading-tight hover:bg-gray-100 hover:text-gray-700"
+          "flex items-center justify-center px-2 h-10 ms-0 leading-tight hover:bg-gray-100 hover:text-gray-700"
       ],
-      # next_link_content: [class: ""],
+      next_link_content:
+        ~H(<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+  <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z" />
+</svg>),
       ellipsis_attrs: [
         aria: [label: "Go to next page"],
         class:
@@ -39,11 +47,11 @@
       ],
       ellipsis_content: {:safe, "&#x22ef;"},
       pagination_list_attrs: [
-        class: "inline-flex items-center justify-center h-10 ms-0 leading-tight"
+        class: "inline-flex items-center justify-stretch h-10 ms-0 leading-tight"
       ],
       pagination_link_attrs: [
         class:
-          "px-4 flex items-center justify-center px-4 h-10 ms-0 leading-tight hover:bg-gray-100 hover:text-gray-700"
+          "px-4 flex items-center justify-center px-2 h-10 ms-0 leading-tight hover:bg-gray-100 hover:text-gray-700"
       ]
     ]
   }

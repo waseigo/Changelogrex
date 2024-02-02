@@ -200,6 +200,7 @@ defmodule Changelogr.Augmentations do
 
   def execute(commit_id, %Changelogr.Augmentations.Instruction{} = instruction) do
     c = Changelogr.Commits.get_commit!(commit_id)
+
     t =
       [
         instruction.prompt,
@@ -216,29 +217,29 @@ defmodule Changelogr.Augmentations do
       end
 
     api = Ollamex.API.new("http://turbo:11434/api")
-    p = %Ollamex.PromptRequest{
-      model: instruction.model,
-      prompt: t,
-      format: format
-    }
-    |> IO.inspect()
+
+    p =
+      %Ollamex.PromptRequest{
+        model: instruction.model,
+        prompt: t,
+        format: format
+      }
+      |> IO.inspect()
 
     results = Ollamex.generate_with_timeout(p, api)
 
-
     case results do
       {:ok, r} ->
-        %Changelogr.Augmentations.Answer{
+        %{
           model: r.model,
           response: r.response,
           status: "done",
-          commit_id: commit_id,
+          commit_id: commit_id
         }
         |> Changelogr.Augmentations.create_answer()
+
       {:error, reason} ->
-        IO.puts reason
+        IO.puts(reason)
     end
-
   end
-
 end

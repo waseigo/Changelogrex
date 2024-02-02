@@ -265,18 +265,15 @@ defmodule Changelogr.Parser do
           |> Enum.take(length(keys))
           |> (&List.zip([keys, &1])).()
           |> Map.new()
-          |> Enum.map(
-            fn {k, v} ->
-              if is_nil(v) do
-                {k, v}
-              else
-                {k, String.replace(v, "\"", "")}
-              end
+          |> Enum.map(fn {k, v} ->
+            if is_nil(v) do
+              {k, v}
+            else
+              {k, String.replace(v, "\"", "")}
             end
-          )
+          end)
 
-        topics =
-          topics
+        topics = topics
         %{title_raw: title_raw, title: title, topics: topics}
     end
   end
