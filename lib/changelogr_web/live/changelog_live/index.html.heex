@@ -1,5 +1,12 @@
-<.header>
-  List of Changelogs
+<!--
+      <header class="bg-white shadow pt-16">
+        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <h1 class="text-3xl font-bold tracking-tight text-gray-900"><%= "@page_title" %></h1>
+        </div>
+      </header>
+      -->
+<.header class="bg-white shadow pt-16">
+  <%= @page_title %>
   <:actions>
     <.link patch={~p"/changelogs/new"}>
       <.button class="bg-stone-600">
@@ -12,28 +19,30 @@
   </:actions>
 </.header>
 
-<div
-  class="flex flex-col mt-8 gap-2"
-  id="changelogs-in-rows"
-  phx-update={match?(%Phoenix.LiveView.LiveStream{}, @streams.changelogs) && "stream"}
->
-  <%= for {id, changelog} <- @streams.changelogs do %>
-    <.live_component module={ChangelogrWeb.ChangelogLive.Row} id={id} changelog={changelog} />
-  <% end %>
-</div>
+<main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+  <div
+    class="flex flex-col mt-8 gap-2"
+    id="changelogs-in-rows"
+    phx-update={match?(%Phoenix.LiveView.LiveStream{}, @streams.changelogs) && "stream"}
+  >
+    <%= for {id, changelog} <- @streams.changelogs do %>
+      <.live_component module={ChangelogrWeb.ChangelogLive.Row} id={id} changelog={changelog} />
+    <% end %>
+  </div>
 
-<.modal
-  :if={@live_action in [:new]}
-  id="changelog-modal"
-  show
-  on_cancel={JS.patch(~p"/changelogs")}
->
-  <.live_component
-    module={ChangelogrWeb.ChangelogLive.FormComponent}
-    id={@changelog.id || :new}
-    title={@page_title}
-    action={@live_action}
-    changelog={@changelog}
-    patch={~p"/changelogs"}
-  />
-</.modal>
+  <.modal
+    :if={@live_action in [:new]}
+    id="changelog-modal"
+    show
+    on_cancel={JS.patch(~p"/changelogs")}
+  >
+    <.live_component
+      module={ChangelogrWeb.ChangelogLive.FormComponent}
+      id={@changelog.id || :new}
+      title={@page_title}
+      action={@live_action}
+      changelog={@changelog}
+      patch={~p"/changelogs"}
+    />
+  </.modal>
+</main>

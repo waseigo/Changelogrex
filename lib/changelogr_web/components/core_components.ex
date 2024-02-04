@@ -428,16 +428,18 @@ defmodule ChangelogrWeb.CoreComponents do
 
   def header(assigns) do
     ~H"""
-    <header class={[@actions != [] && "flex items-center justify-between gap-6", @class]}>
-      <div>
-        <h1 class="text-lg font-semibold leading-8 text-zinc-800">
-          <%= render_slot(@inner_block) %>
-        </h1>
-        <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-zinc-600">
-          <%= render_slot(@subtitle) %>
-        </p>
+    <header class={[@actions != [] && "bg-white shadow pt-16", @class]}>
+      <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 flex items-center justify-between gap-6">
+        <div class="">
+          <h1 class="text-2xl font-bold tracking-tight text-gray-900">
+            <%= render_slot(@inner_block) %>
+          </h1>
+          <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-zinc-600">
+            <%= render_slot(@subtitle) %>
+          </p>
+        </div>
+        <div class="flex-none"><%= render_slot(@actions) %></div>
       </div>
-      <div class="flex-none"><%= render_slot(@actions) %></div>
     </header>
     """
   end
@@ -536,8 +538,8 @@ defmodule ChangelogrWeb.CoreComponents do
 
   def list(assigns) do
     ~H"""
-    <div class="mt-14">
-      <dl class="-my-4 divide-y divide-zinc-100">
+    <div class="">
+      <dl class="divide-y divide-zinc-100">
         <div :for={item <- @item} class="flex gap-4 py-4 text-sm leading-6 sm:gap-8">
           <dt class="w-1/4 flex-none text-zinc-500"><%= item.title %></dt>
           <dd class="text-zinc-700"><%= render_slot(item) %></dd>
@@ -559,7 +561,7 @@ defmodule ChangelogrWeb.CoreComponents do
 
   def back(assigns) do
     ~H"""
-    <div class="mt-16">
+    <div class="mt-4">
       <.link
         navigate={@navigate}
         class="text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700"

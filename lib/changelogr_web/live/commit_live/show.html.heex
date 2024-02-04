@@ -1,4 +1,4 @@
-<.header>
+<.header class="bg-white shadow pt-16">
   <%= @commit.title %>
   <:subtitle>
     <span class="flex items-center mt-3">
@@ -31,31 +31,33 @@
     <pre><%= @commit.body %></pre>
   </:item>
 </.list> -->
-<pre class="text-xs mt-4 leading-2 whitespace-pre-wrap"><%= @commit.body %></pre>
+<main class="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8">
+  <pre class="text-xs mt-4 leading-2 whitespace-pre-wrap"><%= @commit.body %></pre>
 
-<div class="mt-5 p-0">
-  <%= for aug <- @augmentations do %>
-    <div class="p-2 border rounded-md border-blue-300 mb-2">
-      <h3 class="font-semibold border-b-2 border-blue-950"><%= aug.friendly %></h3>
-      <p><%= aug.answers %></p>
-    </div>
-  <% end %>
-</div>
+  <div class="mt-5 p-0">
+    <%= for aug <- @augmentations do %>
+      <div class="p-2 border rounded-md border-blue-300 mb-2">
+        <h3 class="font-semibold border-b-2 border-blue-950"><%= aug.friendly %></h3>
+        <p><%= aug.answers %></p>
+      </div>
+    <% end %>
+  </div>
 
-<.back navigate={~p"/commits"}>Back to commits</.back>
+  <.back navigate={~p"/commits"}>Back to commits</.back>
 
-<.modal
-  :if={@live_action == :edit}
-  id="commit-modal"
-  show
-  on_cancel={JS.patch(~p"/commits/#{@commit}")}
->
-  <.live_component
-    module={ChangelogrWeb.CommitLive.FormComponent}
-    id={@commit.id}
-    title={@page_title}
-    action={@live_action}
-    commit={@commit}
-    patch={~p"/commits/#{@commit}"}
-  />
-</.modal>
+  <.modal
+    :if={@live_action == :edit}
+    id="commit-modal"
+    show
+    on_cancel={JS.patch(~p"/commits/#{@commit}")}
+  >
+    <.live_component
+      module={ChangelogrWeb.CommitLive.FormComponent}
+      id={@commit.id}
+      title={@page_title}
+      action={@live_action}
+      commit={@commit}
+      patch={~p"/commits/#{@commit}"}
+    />
+  </.modal>
+</main>

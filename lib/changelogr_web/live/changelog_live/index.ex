@@ -36,7 +36,7 @@ defmodule ChangelogrWeb.ChangelogLive.Index do
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "Listing Changelogs")
+    |> assign(:page_title, "Changelogs")
     |> assign(:changelog, nil)
   end
 
